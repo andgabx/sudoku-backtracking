@@ -1,14 +1,12 @@
-
 #include "../include/generator.h"
 #include "../include/backtracking.h"
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
 
-// Função auxiliar para embaralhar um array
 void shuffle(int* array, int n) {
     for (int i = n - 1; i > 0; i--) {
-        int j = rand() % (i + 1);
+        int j = rand() % (i + 1); // fisher yates para embaralhar o array, usando mod rand para garantir índice válido
         int temp = array[i];
         array[i] = array[j];
         array[j] = temp;
@@ -48,7 +46,7 @@ bool fill_sudoku(Sudoku* sudoku, int row, int col) {
 }
 
 Sudoku* generate_sudoku(int size, int empty_cells) {
-    srand(time(NULL));
+    // srand(time(NULL));
     
     Sudoku* sudoku = sudoku_create(size);
     

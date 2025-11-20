@@ -1,9 +1,7 @@
-
-"""
-Módulo para geração de puzzles de Sudoku válidos
-"""
 import random
 from sudoku import Sudoku
+
+# gera sudokus validos
 
 def fill_sudoku(sudoku: Sudoku, row: int, col: int) -> bool:
     """
@@ -47,6 +45,10 @@ def generate_sudoku(size: int, empty_cells: int) -> Sudoku:
     Returns:
         Instância de Sudoku gerada
     """
+
+    # gera um sudoku e preenche com uma solução válida, depois usamos um algoritmo fisher yates para remover células aleatoriamente
+    # ele da shuffle nas posicoes do array e remove de acordo com o numero que é pra remover
+
     sudoku = Sudoku(size)
     
     # Preenche o Sudoku com uma solução válida

@@ -1,7 +1,3 @@
-
-"""
-Programa principal para análise de complexidade do backtracking em Sudoku
-"""
 import sys
 import os
 from sudoku import Sudoku
@@ -19,8 +15,9 @@ def main():
     case_str = sys.argv[2]
     
     # Define tamanho do Sudoku e células vazias
+
     size_map = {
-        'small': (3, 2, 5),   # (size, best_empty, worst_empty)
+        'small': (3, 2, 5),   # (tamanho, celulas vazias no melhor caso, celulas vazias no pior caso)
         'medium': (6, 9, 22),
         'large': (9, 23, 55)
     }
@@ -32,10 +29,8 @@ def main():
     size, best_empty, worst_empty = size_map[size_str]
     empty_cells = best_empty if case_str == 'best' else worst_empty
     
-    # Nome do arquivo de log (caminho relativo ao diretório raiz do projeto)
     log_filename = f"../../logs/python_{size_str}_{case_str}.log"
     
-    # Cria diretório logs se não existir
     os.makedirs('../../logs', exist_ok=True)
     
     with open(log_filename, 'w') as log_file:
@@ -53,11 +48,10 @@ def main():
         print(f"Executando 30 testes para {size_str} {case_str} em Python...")
         
         for run in range(1, 31):
-            # Gera novo puzzle
+
             sudoku = generate_sudoku(size, empty_cells)
             actual_empty = sudoku.count_empty_cells()
             
-            # Resolve o puzzle
             result = solve_sudoku_iterativo(sudoku)
             
             log_file.write(f"Execução {run}:\n")
@@ -73,8 +67,17 @@ def main():
             
             print(f"  Execução {run}/30 concluída "
                   f"({result.time_seconds:.6f}s, {result.iterations} iterações)")
+            
+
+            # CASO QUEIRA PRINTAR CADA UM DO SUDOKU
+
+            # print("")
+            
+            # print(f"Tabuleiro da execução {run}:")
+            # print("")
+            # sudoku.print()
+            # print()
         
-        # Estatísticas finais
         log_file.write("=== ESTATÍSTICAS FINAIS ===\n")
         log_file.write(f"Resoluções bem-sucedidas: {successful_solves}/30\n")
         

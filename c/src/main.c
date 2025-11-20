@@ -8,6 +8,9 @@
 #include <time.h>
 
 int main(int argc, char* argv[]) {
+
+    srand(time(NULL));
+
     if (argc != 3) {
         printf("Uso: %s <size> <case>\n", argv[0]);
         printf("  size: small, medium, large\n");
@@ -21,7 +24,6 @@ int main(int argc, char* argv[]) {
     int size;
     int empty_cells;
     
-    // Define tamanho do Sudoku
     if (strcmp(size_str, "small") == 0) {
         size = 3;
         empty_cells = (strcmp(case_str, "best") == 0) ? 2 : 5;
@@ -36,7 +38,6 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     
-    // Nome do arquivo de log (caminho relativo ao diretório raiz do projeto)
     char log_filename[256];
     snprintf(log_filename, sizeof(log_filename), "../../logs/c_%s_%s.log", size_str, case_str);
     
@@ -60,12 +61,16 @@ int main(int argc, char* argv[]) {
     printf("Executando 30 testes para %s %s em C...\n", size_str, case_str);
     
     for (int run = 1; run <= 30; run++) {
-        // Gera novo puzzle
+        
         Sudoku* sudoku = generate_sudoku(size, empty_cells);
         int actual_empty = count_empty_cells(sudoku);
         
-        // Resolve o puzzle
         SolveResult result = solve_sudoku_iterative(sudoku);
+
+        // printf("Tabuleiro da execução %d:\n", run);
+        // sudoku_print(sudoku);
+        // printf("\n");
+
         
         fprintf(log_file, "Execução %d:\n", run);
         fprintf(log_file, "  Células vazias: %d\n", actual_empty);
@@ -85,7 +90,6 @@ int main(int argc, char* argv[]) {
                run, 30, result.time_seconds, result.iterations);
     }
     
-    // Estatísticas finais
     fprintf(log_file, "=== ESTATÍSTICAS FINAIS ===\n");
     fprintf(log_file, "Resoluções bem-sucedidas: %d/30\n", successful_solves);
     

@@ -1,27 +1,15 @@
-#!/usr/bin/env python3
-"""
-Script para análise e visualização dos resultados dos testes
-Extrai estatísticas dos arquivos de log e gera tabelas comparativas
-"""
-
 import os
 import re
 from pathlib import Path
 
 def parse_log_file(filename):
-    """
-    Extrai informações de um arquivo de log
-    
-    Returns:
-        dict com estatísticas
-    """
+
     if not os.path.exists(filename):
         return None
     
     with open(filename, 'r') as f:
         content = f.read()
     
-    # Extrai informações usando regex
     lang_match = re.search(r'Linguagem: (\w+)', content)
     size_match = re.search(r'Tamanho: (\d+)x\d+', content)
     case_match = re.search(r'Caso: (\w+)', content)
@@ -51,7 +39,6 @@ def main():
         print("Execute 'make run-all' para gerar os logs primeiro.")
         return
     
-    # Define ordem dos resultados
     configs = [
         ('c', 'small', 'best'),
         ('c', 'small', 'worst'),
@@ -79,12 +66,10 @@ def main():
         print("Execute 'make run-all' para gerar os logs primeiro.")
         return
     
-    # Exibe resultados
     print("\n" + "="*100)
     print("📊 ANÁLISE DE COMPLEXIDADE - BACKTRACKING ITERATIVO PARA SUDOKU")
     print("="*100)
     
-    # Tabela principal
     print("\n{:<10} {:<8} {:<8} {:<12} {:<18} {:<18} {:<10}".format(
         "Linguagem", "Tamanho", "Caso", "Resolvidos", "Tempo Médio (s)", "Iterações Médias", "Sucesso"
     ))
@@ -101,12 +86,10 @@ def main():
             "✓" if r['successful'] == r['total_runs'] else "✗"
         ))
     
-    # Análise comparativa C vs Python
     print("\n" + "="*100)
     print("📈 ANÁLISE COMPARATIVA: C vs PYTHON")
     print("="*100)
     
-    # Agrupa por size_case
     size_case_map = {}
     for r in results:
         key = f"{r['size']}_{r['case']}"
@@ -133,20 +116,17 @@ def main():
                     speedup
                 ))
     
-    # Resumo de complexidade
     print("\n" + "="*100)
     print("🔬 ANÁLISE DE COMPLEXIDADE")
     print("="*100)
     print("\nObservações sobre a complexidade de tempo:\n")
     
-    # Compara best vs worst para cada tamanho
     sizes_found = {}
     for r in results:
-        if r['language'] == 'C':  # Usa C como referência
+        if r['language'] == 'C':  
             key = (r['size'], r['case'])
             sizes_found[key] = r
     
-    # Agrupa por tamanho
     size_groups = {}
     for (size, case), r in sizes_found.items():
         if size not in size_groups:

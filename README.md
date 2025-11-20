@@ -1,11 +1,5 @@
 # 🧩 Análise de Complexidade: Backtracking Iterativo para Sudoku
 
-**Projeto de Teoria da Computação**  
-**Prof. Daniel Bezerra - CESAR School**  
-**Outubro/Novembro 2025**
-
----
-
 ## 📋 Descrição do Projeto
 
 Este projeto implementa e analisa a complexidade de tempo do algoritmo de **Backtracking Iterativo** para resolver puzzles de Sudoku. O objetivo é realizar uma análise comparativa detalhada considerando:
@@ -18,9 +12,9 @@ Este projeto implementa e analisa a complexidade de tempo do algoritmo de **Back
 
 ### 🎯 Características Principais
 
-✅ **Backtracking Iterativo** (não recursivo) usando estruturas de dados explícitas:
-   - **C**: Pilha (`Stack`) implementada com array dinâmico
-   - **Python**: Lista usada como pilha
+✅ **Backtracking Iterativo** (não recursivo) usando lista de células vazias e índice:
+   - **C**: Array de coordenadas (`Coordenada[]`) para armazenar células vazias
+   - **Python**: Lista de tuplas `Coordenada` para armazenar células vazias
 
 ✅ **Gerador de Puzzles Válidos** com configurações controladas de dificuldade
 
@@ -198,46 +192,57 @@ Iterações totais: XXXXX
 
 ### Backtracking Iterativo
 
-Ao contrário da implementação recursiva tradicional, este projeto usa **backtracking iterativo** com pilha explícita:
+Ao contrário da implementação recursiva tradicional, este projeto usa **backtracking iterativo** baseado em lista de células vazias e índice de navegação:
 
-#### C - Stack
+#### C - Lista de Coordenadas
 ```c
 typedef struct {
-    State* items;
-    int top;
-    int capacity;
-} Stack;
+    int row;
+    int col;
+} Coordenada;
+
+Coordenada* lista_vazias = malloc(sizeof(Coordenada) * size * size);
+int k = 0;  // Índice da célula vazia atual
 ```
 
-Operações: `stack_push()`, `stack_pop()`, `stack_is_empty()`
-
-#### Python - Lista
+#### Python - Lista de Coordenadas
 ```python
-stack = []  # Lista usada como pilha
-stack.append(state)  # Push
-state = stack.pop()  # Pop
+class Coordenada(NamedTuple):
+    row: int
+    col: int
+
+lista_vazias = []  # Lista de Coordenada
+k = 0  # Índice da célula vazia atual
 ```
 
 ### Fluxo do Algoritmo
 
-1. **Inicialização**: Encontra primeira célula vazia e empilha estado inicial
-2. **Loop Principal**: Enquanto a pilha não estiver vazia:
-   - Desempilha estado atual
-   - Tenta números de 1 a N
+1. **Inicialização**: 
+   - Encontra todas as células vazias e armazena em uma lista de coordenadas
+   - Inicializa índice `k = 0` (primeira célula vazia)
+
+2. **Loop Principal**: Enquanto `0 ≤ k < total_vazias`:
+   - Obtém a célula vazia atual: `lista_vazias[k]`
+   - Tenta números a partir do valor atual da célula + 1 até N
    - Se encontrar número válido:
-     - Coloca na célula
-     - Empilha estado para backtrack
-     - Encontra próxima célula vazia
-     - Se não houver mais vazias → **Resolvido!**
-   - Se não encontrar número válido → **Backtrack** (continua loop)
-3. **Fim**: Sudoku resolvido ou pilha vazia (impossível resolver)
+     - Coloca o número na célula
+     - Incrementa `k++` (avança para próxima célula vazia)
+     - Se `k == total_vazias` → **Resolvido!**
+   - Se não encontrar número válido:
+     - Limpa a célula (`grid[r][c] = 0`)
+     - Decrementa `k--` (backtrack para célula anterior)
+
+3. **Fim**: 
+   - Se `k == total_vazias`: Sudoku resolvido
+   - Se `k < 0`: Impossível resolver (backtrack completo)
 
 ### Vantagens da Implementação Iterativa
 
-✅ **Controle explícito** do estado do algoritmo  
+✅ **Controle explícito** do estado do algoritmo através do índice `k`  
 ✅ **Sem limite de recursão** (evita stack overflow)  
 ✅ **Contagem precisa** de iterações  
-✅ **Mais eficiente** em algumas linguagens (menos overhead)
+✅ **Estrutura simples**: apenas uma lista de coordenadas e um índice  
+✅ **Mais eficiente** em algumas linguagens (menos overhead que recursão)
 
 ---
 
@@ -250,8 +255,6 @@ state = stack.pop()  # Pop
   - M = número de células vazias
 
 - **Melhor Caso**: O(M) onde M é o número de células vazias (quando não há backtracking necessário)
-
-- **Caso Médio**: O(N^(M/2)) aproximadamente, dependendo da configuração do puzzle
 
 ### Classes de Complexidade
 
@@ -279,20 +282,18 @@ Este projeto visa:
 ✅ Compreender **análise de complexidade** na prática  
 ✅ Comparar **implementações iterativas vs recursivas**  
 ✅ Analisar **diferenças entre linguagens** (C vs Python)  
-✅ Investigar **melhor, pior e caso médio**  
+✅ Investigar **melhor, pior caso**  
 ✅ Relacionar **teoria com prática** em algoritmos NP-completos
 
 ---
 
 ## 👥 Equipe
 
-- [Nome 1]
-- [Nome 2]
-- [Nome 3]
-- [Nome 4]
+- Anderson Gabriel
+- Débora Souza
+- Filipe Macedo
+- Rafael Peixoto
 
-**Algoritmo sorteado**: Backtracking (Sudoku)  
-**Data**: Outubro/Novembro 2025
 
 ---
 
@@ -302,22 +303,4 @@ Este projeto visa:
 2. Cormen, T. H., et al. (2009). *Introduction to Algorithms*
 3. Sudoku Solving Algorithms: https://en.wikipedia.org/wiki/Sudoku_solving_algorithms
 4. NP-Completeness of Sudoku: Yato, T., & Seta, T. (2003)
-
----
-
-## 📄 Licença
-
-Este projeto é desenvolvido para fins educacionais como parte do curso de Teoria da Computação na CESAR School.
-
----
-
-## 📧 Contato
-
-Para dúvidas sobre o projeto:
-- **Professor**: Daniel Bezerra
-- **Disciplina**: Teoria da Computação
-- **Instituição**: CESAR School
-
----
-
-**Última atualização**: Novembro 2025
+5. Randomness in Sudoku solving algorithm: https://stackoverflow.com/questions/60813855/randomness-in-sudoku-solving-algorithm
