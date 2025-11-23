@@ -12,7 +12,7 @@ PY_SRC_DIR = python/src
 LOGS_DIR = logs
 
 # Arquivos fonte C
-C_SOURCES = $(C_SRC_DIR)/sudoku.c $(C_SRC_DIR)/backtracking.c $(C_SRC_DIR)/generator.c $(C_SRC_DIR)/main.c
+C_SOURCES = $(C_SRC_DIR)/sudoku.c $(C_SRC_DIR)/backtracking.c $(C_SRC_DIR)/puzzle_loader.c $(C_SRC_DIR)/main.c
 C_EXECUTABLE = $(C_BIN_DIR)/sudoku_solver
 
 # Parâmetros padrão
@@ -44,6 +44,9 @@ $(LOGS_DIR):
 
 # Executa um teste específico
 run: $(LOGS_DIR)
+	@echo "$(BLUE)Gerando puzzles pré-gerados...$(NC)"
+	@$(PYTHON) generate_sudoku_puzzles.py
+	@echo ""
 ifeq ($(LANG),c)
 	@$(MAKE) build --no-print-directory
 	@echo "$(BLUE)Executando teste C: SIZE=$(SIZE) CASE=$(CASE)$(NC)"
@@ -55,6 +58,10 @@ else
 	@echo "$(YELLOW)Erro: LANG deve ser 'c' ou 'python'$(NC)"
 	@exit 1
 endif
+	@echo ""
+	@echo "$(BLUE)Gerando gráficos de performance...$(NC)"
+	@$(PYTHON) plot/plot_results.py
+	@echo "$(GREEN)✓ Gráficos gerados em: plot/$(NC)"
 
 # Executa todas as 12 combinações (3 sizes × 2 cases × 2 langs)
 run-all: $(LOGS_DIR)
@@ -63,6 +70,9 @@ run-all: $(LOGS_DIR)
 	@echo "$(GREEN)  Executando 12 combinações (3 sizes × 2 cases × 2 langs)$(NC)"
 	@echo "$(GREEN)  Total: 360 execuções (30 por combinação)$(NC)"
 	@echo "$(GREEN)════════════════════════════════════════════════════════════$(NC)"
+	@echo ""
+	@echo "$(BLUE)Gerando puzzles pré-gerados...$(NC)"
+	@$(PYTHON) generate_sudoku_puzzles.py
 	@echo ""
 	@$(MAKE) build --no-print-directory
 	@echo ""
@@ -107,15 +117,26 @@ run-all: $(LOGS_DIR)
 	@echo "$(GREEN)  Logs salvos em: $(LOGS_DIR)/$(NC)"
 	@echo "$(GREEN)════════════════════════════════════════════════════════════$(NC)"
 	@ls -lh $(LOGS_DIR)/
+	@echo ""
+	@echo "$(BLUE)Gerando gráficos de performance...$(NC)"
+	@$(PYTHON) plot/plot_results.py
+	@echo "$(GREEN)✓ Gráficos gerados em: plot/$(NC)"
 
 # Testa uma configuração específica (apenas 3 execuções para teste rápido)
 test: $(LOGS_DIR)
+	@echo "$(BLUE)Gerando puzzles pré-gerados...$(NC)"
+	@$(PYTHON) generate_sudoku_puzzles.py
+	@echo ""
 	@echo "$(BLUE)Teste rápido: C - Small - Best Case (apenas 3 execuções)$(NC)"
 	@$(MAKE) build --no-print-directory
 	@cd $(C_BIN_DIR) && ./sudoku_solver small best | head -5
 	@echo ""
 	@echo "$(BLUE)Teste rápido: Python - Small - Best Case (apenas 3 execuções)$(NC)"
 	@cd $(PY_SRC_DIR) && $(PYTHON) main.py small best | head -5
+	@echo ""
+	@echo "$(BLUE)Gerando gráficos de performance...$(NC)"
+	@$(PYTHON) plot/plot_results.py
+	@echo "$(GREEN)✓ Gráficos gerados em: plot/$(NC)"
 
 # Remove arquivos compilados e logs
 clean:

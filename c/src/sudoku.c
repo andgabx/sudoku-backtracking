@@ -1,4 +1,3 @@
-
 #include "../include/sudoku.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -58,14 +57,6 @@ bool is_valid(Sudoku* sudoku, int row, int col, int num) {
     return true;
 }
 
-void sudoku_copy(Sudoku* dest, Sudoku* src) {
-    for (int i = 0; i < src->size; i++) {
-        for (int j = 0; j < src->size; j++) {
-            dest->grid[i][j] = src->grid[i][j];
-        }
-    }
-}
-
 void sudoku_print(Sudoku* sudoku) {
     for (int i = 0; i < sudoku->size; i++) {
         if (i % sudoku->box_size == 0 && i != 0) {
@@ -95,4 +86,45 @@ int count_empty_cells(Sudoku* sudoku) {
         }
     }
     return count;
+}
+
+Sudoku* sudoku_parse_from_string(const char* str, int size) {
+    Sudoku* sudoku = sudoku_create(size);
+    
+    // Copia a string para poder usar strtok
+    char* str_copy = (char*)malloc(strlen(str) + 1);
+    strcpy(str_copy, str);
+    
+    char* line = strtok(str_copy, "\n");
+    int row = 0;
+    
+    while (line != NULL && row < size) {
+        // Pula linhas de separador (que começam com -)
+        if (line[0] == '-') {
+            line = strtok(NULL, "\n");
+            continue;
+        }
+        
+        // Parse números da linha, ignorando | e espaços
+        int col = 0;
+        for (int i = 0; line[i] != '\0' && col < size; i++) {
+            // Se é um dígito, converte
+            if (line[i] >= '0' && line[i] <= '9') {
+                sudoku->grid[row][col] = line[i] - '0';
+                col++;
+                // Pula o resto do número se houver (não deve acontecer para Sudoku 3x3, 6x6, 9x9)
+                while (line[i + 1] >= '0' && line[i + 1] <= '9') {
+                    i++;
+                }
+            }
+        }
+        
+        if (col > 0) {  // Só incrementa row se encontrou números
+            row++;
+        }
+        line = strtok(NULL, "\n");
+    }
+    
+    free(str_copy);
+    return sudoku;
 }

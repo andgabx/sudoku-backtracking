@@ -2,13 +2,13 @@ import sys
 import os
 from sudoku import Sudoku
 from backtracking import solve_sudoku_iterativo
-from generator import generate_sudoku
 
 def main():
-    if len(sys.argv) != 3:
-        print(f"Uso: {sys.argv[0]} <size> <case>")
+    if len(sys.argv) != 3 and len(sys.argv) != 4:
+        print(f"Uso: {sys.argv[0]} <size> <case> [puzzle_file]")
         print("  size: small, medium, large")
         print("  case: best, worst")
+        print("  puzzle_file: (opcional) arquivo com puzzles pré-gerados")
         sys.exit(1)
     
     size_str = sys.argv[1]
@@ -47,10 +47,41 @@ def main():
         
         print(f"Executando 30 testes para {size_str} {case_str} em Python...")
         
-        for run in range(1, 31):
-
-            sudoku = generate_sudoku(size, empty_cells)
+        # Determinar arquivo de puzzles
+        if len(sys.argv) == 4:
+            puzzle_file_path = sys.argv[3]
+        else:
+            puzzle_file_path = f"../../puzzle_seeds/{size_str}_{case_str}.txt"
+        
+        try:
+            with open(puzzle_file_path, 'r') as f:
+                puzzle_content = f.read()
+        except FileNotFoundError:
+            print(f"Erro: Arquivo de puzzles não encontrado: {puzzle_file_path}")
+            print("Execute primeiro: python3 generate_sudoku_puzzles.py")
+            sys.exit(1)
+        
+        print(f"  Carregando puzzles de: {puzzle_file_path}")
+        
+        # Parse puzzles do arquivo
+        puzzles = []
+        puzzle_sections = puzzle_content.split("=== Puzzle")
+        for section in puzzle_sections[1:]:  # Pula o primeiro (vazio)
+            # Extrai o número do puzzle e o conteúdo
+            lines = section.strip().split('\n')
+            if len(lines) > 1:
+                puzzle_str = '\n'.join(lines[1:])  # Remove a linha "=== Puzzle X/30 ==="
+                sudoku = Sudoku.parse_from_string(puzzle_str, size)
+                puzzles.append(sudoku)
+        
+        if len(puzzles) < 30:
+            print(f"  Aviso: Apenas {len(puzzles)} puzzles encontrados no arquivo")
+        
+        for run in range(1, min(31, len(puzzles) + 1)):
+            sudoku = puzzles[run - 1]
             actual_empty = sudoku.count_empty_cells()
+            
+            print(f"\n=== Execução {run}/30 ===")
             
             result = solve_sudoku_iterativo(sudoku)
             
@@ -67,16 +98,6 @@ def main():
             
             print(f"  Execução {run}/30 concluída "
                   f"({result.time_seconds:.6f}s, {result.iterations} iterações)")
-            
-
-            # CASO QUEIRA PRINTAR CADA UM DO SUDOKU
-
-            # print("")
-            
-            # print(f"Tabuleiro da execução {run}:")
-            # print("")
-            # sudoku.print()
-            # print()
         
         log_file.write("=== ESTATÍSTICAS FINAIS ===\n")
         log_file.write(f"Resoluções bem-sucedidas: {successful_solves}/30\n")

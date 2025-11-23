@@ -1,20 +1,17 @@
-
 #include "../include/sudoku.h"
 #include "../include/backtracking.h"
-#include "../include/generator.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 
 int main(int argc, char* argv[]) {
 
-    srand(time(NULL));
-
-    if (argc != 3) {
-        printf("Uso: %s <size> <case>\n", argv[0]);
+    if (argc != 3 && argc != 4) {
+        printf("Uso: %s <size> <case> [puzzle_file]\n", argv[0]);
         printf("  size: small, medium, large\n");
         printf("  case: best, worst\n");
+        printf("  puzzle_file: (opcional) arquivo com puzzles pré-gerados\n");
+        printf("               Se não fornecido, usa puzzle_seeds/{size}_{case}.txt\n");
         return 1;
     }
     
@@ -60,16 +57,37 @@ int main(int argc, char* argv[]) {
     
     printf("Executando 30 testes para %s %s em C...\n", size_str, case_str);
     
+    // Determinar arquivo de puzzles
+    char puzzle_filename[256];
+    if (argc == 4) {
+        strncpy(puzzle_filename, argv[3], sizeof(puzzle_filename) - 1);
+        puzzle_filename[sizeof(puzzle_filename) - 1] = '\0';
+    } else {
+        snprintf(puzzle_filename, sizeof(puzzle_filename), "../../puzzle_seeds/%s_%s.txt", size_str, case_str);
+    }
+    
+    FILE* puzzle_file = fopen(puzzle_filename, "r");
+    if (!puzzle_file) {
+        printf("Erro: Não foi possível abrir arquivo de puzzles: %s\n", puzzle_filename);
+        printf("Execute primeiro: python3 generate_sudoku_puzzles.py\n");
+        return 1;
+    }
+    printf("  Carregando puzzles de: %s\n", puzzle_filename);
+    
     for (int run = 1; run <= 30; run++) {
         
-        Sudoku* sudoku = generate_sudoku(size, empty_cells);
+        Sudoku* sudoku = load_puzzle_from_file(puzzle_file, size);
+        if (!sudoku) {
+            printf("Erro: Não foi possível carregar puzzle %d do arquivo\n", run);
+            fclose(puzzle_file);
+            return 1;
+        }
+        
         int actual_empty = count_empty_cells(sudoku);
         
+        printf("\n=== Execução %d/30 ===\n", run);
+        
         SolveResult result = solve_sudoku_iterative(sudoku);
-
-        // printf("Tabuleiro da execução %d:\n", run);
-        // sudoku_print(sudoku);
-        // printf("\n");
 
         
         fprintf(log_file, "Execução %d:\n", run);
@@ -89,6 +107,8 @@ int main(int argc, char* argv[]) {
         printf("  Execução %d/%d concluída (%.6fs, %lld iterações)\n", 
                run, 30, result.time_seconds, result.iterations);
     }
+    
+    fclose(puzzle_file);
     
     fprintf(log_file, "=== ESTATÍSTICAS FINAIS ===\n");
     fprintf(log_file, "Resoluções bem-sucedidas: %d/30\n", successful_solves);

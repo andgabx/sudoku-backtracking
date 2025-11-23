@@ -1,0 +1,64 @@
+# Arquivos compilados (C)
+c/bin/
+*.o
+*.a
+*.so
+*.exe
+
+# Logs gerados pelos testes
+logs/
+*.log
+
+# Gráficos gerados (mantém os scripts)
+plot/*.png
+plot/__pycache__/
+
+# Puzzles pré-gerados
+puzzle_seeds/
+
+# Cache Python
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.pyc
+
+# Arquivos LaTeX auxiliares
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+*.bbl
+*.blg
+*.idx
+*.ilg
+*.ind
+*.lof
+*.lot
+*.nav
+*.snm
+*.vrb
+
+# Arquivos temporários
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+

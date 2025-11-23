@@ -146,8 +146,6 @@ def main():
     print("\n" + "="*100)
     print("✅ Análise concluída!")
     print("="*100)
-    print("\n💡 Dica: Use esses dados para criar gráficos no seu relatório!")
-    print("   Os arquivos de log completos estão em: logs/\n")
 
 if __name__ == "__main__":
     main()

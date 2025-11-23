@@ -52,16 +52,6 @@ class Sudoku:
                     count += 1
         return count
     
-    def copy(self) -> 'Sudoku':
-
-# cria uma copia do sudoku e retorna essa nova instancia
-
-        new_sudoku = Sudoku(self.size)
-        for i in range(self.size):
-            for j in range(self.size):
-                new_sudoku.grid[i][j] = self.grid[i][j]
-        return new_sudoku
-    
     def print(self):
 
 # imprime o tabuleiro do sudoku formatado
@@ -75,3 +65,27 @@ class Sudoku:
                     print("| ", end="")
                 print(f"{self.grid[i][j]} ", end="")
             print()
+    
+    @staticmethod
+    def parse_from_string(sudoku_str: str, size: int) -> 'Sudoku':
+        """Converte uma string de Sudoku de volta para objeto Sudoku."""
+        sudoku = Sudoku(size)
+        lines = [line.strip() for line in sudoku_str.strip().split('\n') if line.strip() and not line.startswith('-')]
+        
+        row = 0
+        for line in lines:
+            if row >= size:
+                break
+            # Remove separadores "|" e espaços
+            cells = line.replace('|', ' ').split()
+            col = 0
+            for cell in cells:
+                if col < size:
+                    try:
+                        sudoku.grid[row][col] = int(cell)
+                        col += 1
+                    except ValueError:
+                        pass
+            row += 1
+        
+        return sudoku
