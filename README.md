@@ -409,8 +409,6 @@ pip install pandas matplotlib numpy
 
 **Gráficos gerados:**
 
-O script gera 4 gráficos em formato PNG (alta resolução, 300 DPI):
-
 1. **1_tempo_comparacao.png**
    - Comparação de tempo entre C e Python
    - Separado por Best Case e Worst Case

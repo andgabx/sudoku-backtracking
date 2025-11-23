@@ -142,6 +142,10 @@ test: $(LOGS_DIR)
 clean:
 	@echo "$(YELLOW)Removendo arquivos compilados e logs...$(NC)"
 	@rm -rf $(C_BIN_DIR) $(LOGS_DIR)
+	@echo "$(YELLOW)Removendo puzzles pré-gerados...$(NC)"
+	@rm -rf puzzle_seeds
+	@echo "$(YELLOW)Removendo gráficos gerados...$(NC)"
+	@rm -f plot/*.png
 	@echo "$(GREEN)✓ Limpeza concluída!$(NC)"
 
 # Exibe ajuda
