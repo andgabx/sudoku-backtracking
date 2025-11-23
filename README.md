@@ -35,17 +35,58 @@ sudoku_backtracking/
 │   │   └── backtracking.h     # Algoritmo de backtracking iterativo
 │   │
 │   └── src/                    # Código fonte (.c)
-│       ├── sudoku.c           # Implementação das operações
-│       ├── backtracking.c     # Implementação do backtracking
-│       ├── puzzle_loader.c    # Carregamento de puzzles de arquivos
-│       └── main.c             # Programa principal
+│       ├── main.c             # ← Função principal do código em C
+│       │                        #    - Processa argumentos de linha de comando
+│       │                        #    - Carrega puzzles de arquivos
+│       │                        #    - Executa 30 testes por configuração
+│       │                        #    - Chama solve_sudoku_iterative() para cada puzzle
+│       │                        #    - Gera logs com resultados (tempo, iterações)
+│       │
+│       ├── backtracking.c     # ← Implementação do algoritmo de backtracking iterativo
+│       │                        #    - solve_sudoku_iterative(): algoritmo principal
+│       │                        #    - find_all_empty_cells(): encontra células vazias
+│       │                        #    - find_next_valid_number(): busca próximo valor válido
+│       │                        #    - is_safe(), is_in_row(), is_in_col(), is_in_box(): validações
+│       │
+│       ├── sudoku.c           # ← Implementação das operações básicas do Sudoku
+│       │                        #    - sudoku_create(): cria estrutura do Sudoku
+│       │                        #    - sudoku_destroy(): libera memória
+│       │                        #    - is_valid(): verifica se número é válido
+│       │                        #    - sudoku_print(): imprime o Sudoku
+│       │                        #    - count_empty_cells(): conta células vazias
+│       │                        #    - sudoku_parse_from_string(): converte string para Sudoku
+│       │
+│       └── puzzle_loader.c    # ← Carregamento de puzzles de arquivos
+│                                #    - load_puzzle_from_file(): lê um puzzle do arquivo
+│                                #    - Parse do formato texto (com separadores | e -)
+│                                #    - Retorna Sudoku pronto para resolução
 │
 ├── python/                     # Implementação em Python
 │   └── src/                    # Módulos Python
-│       ├── sudoku.py          # Classe Sudoku
-│       ├── backtracking.py    # Algoritmo de backtracking iterativo
-│       ├── generator.py       # Gerador de puzzles
-│       └── main.py            # Programa principal
+│       ├── main.py            # ← Função principal do código em Python
+│       │                        #    - Processa argumentos de linha de comando
+│       │                        #    - Carrega puzzles de arquivos
+│       │                        #    - Executa 30 testes por configuração
+│       │                        #    - Chama solve_sudoku_iterativo() para cada puzzle
+│       │                        #    - Gera logs com resultados (tempo, iterações)
+│       │
+│       ├── backtracking.py    # ← Algoritmo de backtracking iterativo
+│       │                        #    - solve_sudoku_iterativo(): algoritmo principal
+│       │                        #    - _find_all_empty_cells(): encontra células vazias
+│       │                        #    - _find_next_valid_number(): busca próximo valor válido
+│       │                        #    - _is_safe(), _is_in_row(), _is_in_col(), _is_in_box(): validações
+│       │
+│       ├── sudoku.py          # ← Classe Sudoku e operações básicas
+│       │                        #    - Classe Sudoku: estrutura de dados
+│       │                        #    - is_valid(): verifica se número é válido
+│       │                        #    - print(): imprime o Sudoku
+│       │                        #    - count_empty_cells(): conta células vazias
+│       │                        #    - parse_from_string(): converte string para Sudoku
+│       │
+│       └── generator.py       # ← Gerador de puzzles válidos
+│                                #    - generate_sudoku(): gera puzzle com células vazias
+│                                #    - fill_sudoku(): preenche Sudoku com solução válida
+│                                #    - PortableLCG: gerador aleatório portável (compatível com C)
 │
 ├── logs/                       # Logs gerados (criado automaticamente)
 │   ├── c_small_best.log
@@ -59,13 +100,36 @@ sudoku_backtracking/
 │   └── ... (6 arquivos no total)
 │
 ├── plot/                       # Scripts de visualização
-│   ├── plot_results.py        # Geração de gráficos de performance
+│   ├── plot_results.py        # ← Geração de gráficos de performance
+│   │                            #    - Lê arquivos de log
+│   │                            #    - Gera 4 gráficos PNG (tempo, iterações, comparações)
+│   │                            #    - Usa pandas, matplotlib, numpy
+│   │
 │   └── requirements.txt       # Dependências Python
 │
-├── analyze_results.py          # Script de análise e visualização de resultados
-├── generate_sudoku_puzzles.py  # Script para gerar puzzles pré-gerados
-├── run_with_shared_seeds.py   # Script para executar testes com puzzles compartilhados
-├── Makefile                    # Automação de compilação e testes
+├── analyze_results.py          # ← Script de análise e visualização de resultados
+│                                #    - Lê todos os arquivos de log
+│                                #    - Extrai estatísticas (tempo médio, iterações)
+│                                #    - Gera tabelas comparativas C vs Python
+│                                #    - Calcula speedup entre linguagens
+│
+├── generate_sudoku_puzzles.py  # ← Script para gerar puzzles pré-gerados
+│                                #    - Gera 30 puzzles para cada configuração (size × case)
+│                                #    - Salva em formato texto (puzzle_seeds/)
+│                                #    - Usa generator.py para criar puzzles válidos
+│
+├── run_with_shared_seeds.py   # ← Script para executar testes com puzzles compartilhados
+│                                #    - Orquestra execução de C e Python
+│                                #    - Garante que ambos usem os mesmos puzzles
+│                                #    - Usado pelo Makefile em run-all e test
+│
+├── Makefile                    # ← Automação de compilação e testes
+│                                #    - build: compila código C
+│                                #    - run: executa teste específico
+│                                #    - run-all: executa todos os 360 testes
+│                                #    - test: teste rápido
+│                                #    - clean: remove arquivos gerados
+│
 └── README.md                   # Este arquivo
 ```
 
@@ -450,12 +514,13 @@ make help
 
 | Tamanho | Dimensão | Melhor Caso (vazias) | Pior Caso (vazias) |
 |---------|----------|----------------------|--------------------|
-| Small   | 3×3      | 2-3                  | 5-6                |
-| Medium  | 6×6      | 8-10                 | 20-24              |
-| Large   | 9×9      | 20-25                | 50-60              |
+| Small   | 3×3      | 2                    | 5                  |
+| Medium  | 6×6      | 9                    | 22                 |
+| Large   | 9×9      | 23                   | 55                 |
 
-**Melhor Caso**: Puzzles com poucas células vazias, mais fáceis de resolver  
-**Pior Caso**: Puzzles com muitas células vazias, mais difíceis de resolver
+**Melhor Caso**: Puzzles com poucas células vazias (2, 9, 23 respectivamente). O algoritmo encontra a solução rapidamente, com complexidade O(M), onde M é o número de células vazias. Os valores corretos são encontrados na primeira tentativa para cada célula, resultando em mínimo backtracking.
+
+**Pior Caso**: Puzzles com muitas células vazias (5, 22, 55 respectivamente). O algoritmo precisa explorar muitas combinações de valores, exigindo backtracking extensivo. A complexidade é O(N^M), onde N é o tamanho do Sudoku e M o número de células vazias, resultando em crescimento exponencial de iterações.
 
 ---
 
@@ -502,7 +567,9 @@ typedef struct {
     int col;
 } Coordenada;
 
-Coordenada* lista_vazias = malloc(sizeof(Coordenada) * size * size);
+Coordenada* lista_vazias = (Coordenada*)malloc(
+    sizeof(Coordenada) * sudoku->size * sudoku->size);
+int total_vazias = find_all_empty_cells(sudoku, lista_vazias);
 int k = 0;  // Índice da célula vazia atual
 ```
 
@@ -512,26 +579,31 @@ class Coordenada(NamedTuple):
     row: int
     col: int
 
-lista_vazias = []  # Lista de Coordenada
+lista_vazias = _find_all_empty_cells(sudoku)  # Lista de Coordenada
+total_vazias = len(lista_vazias)
 k = 0  # Índice da célula vazia atual
 ```
 
 ### Fluxo do Algoritmo
 
 1. **Inicialização**: 
-   - Encontra todas as células vazias e armazena em uma lista de coordenadas
+   - Encontra todas as células vazias usando `find_all_empty_cells()` (C) ou `_find_all_empty_cells()` (Python)
+   - Armazena as coordenadas em `lista_vazias` e obtém `total_vazias`
    - Inicializa índice `k = 0` (primeira célula vazia)
+   - Se `total_vazias == 0`, o Sudoku já está resolvido
 
-2. **Loop Principal**: Enquanto `0 ≤ k < total_vazias`:
+2. **Loop Principal**: Enquanto `k >= 0 && k < total_vazias` (C) ou `-1 < k < total_vazias` (Python):
    - Obtém a célula vazia atual: `lista_vazias[k]`
-   - Tenta números a partir do valor atual da célula + 1 até N
-   - Se encontrar número válido:
-     - Coloca o número na célula
+   - Extrai coordenadas: `r = cell.row`, `c = cell.col`
+   - Calcula início da busca: `num_inicio = grid[r][c] + 1`
+   - Busca próximo número válido: `num_valido = find_next_valid_number(sudoku, r, c, num_inicio)`
+   - Se encontrar número válido (`num_valido <= size`):
+     - Coloca o número na célula: `grid[r][c] = num_valido`
      - Incrementa `k++` (avança para próxima célula vazia)
      - Se `k == total_vazias` → **Resolvido!**
-   - Se não encontrar número válido:
-     - Limpa a célula (`grid[r][c] = 0`)
-     - Decrementa `k--` (backtrack para célula anterior)
+   - Se não encontrar número válido (`num_valido > size`):
+     - Limpa a célula: `grid[r][c] = 0` (backtrack)
+     - Decrementa `k--` (recua para célula anterior)
 
 3. **Fim**: 
    - Se `k == total_vazias`: Sudoku resolvido
@@ -552,10 +624,12 @@ k = 0  # Índice da célula vazia atual
 ### Classificação Assintótica
 
 - **Pior Caso**: O(N^M) onde:
-  - N = tamanho do Sudoku (3, 6, 9)
+  - N = tamanho do Sudoku (3, 6, 9) - número de possíveis valores por célula
   - M = número de células vazias
+  - **Quando ocorre**: Quando o algoritmo precisa explorar todas as possíveis combinações de valores para as células vazias. Isso acontece quando os valores corretos só são encontrados após testar muitas combinações inválidas, exigindo backtracking extensivo.
 
-- **Melhor Caso**: O(M) onde M é o número de células vazias (quando não há backtracking necessário)
+- **Melhor Caso**: O(M) onde M é o número de células vazias
+  - **Quando ocorre**: Quando o algoritmo encontra a solução sem necessidade de backtracking significativo. Isso acontece quando há poucas células vazias e os valores corretos são encontrados na primeira tentativa para cada célula, resultando em complexidade linear no número de células vazias.
 
 ### Classes de Complexidade
 
@@ -569,22 +643,10 @@ k = 0  # Índice da célula vazia atual
 
 Os resultados práticos demonstram:
 
-1. **Crescimento exponencial** com aumento de células vazias
-2. **Diferença significativa** entre melhor e pior caso
-3. **Impacto da linguagem** (C geralmente 10-50x mais rápido que Python)
-4. **Variabilidade** mesmo com mesma configuração (aleatoriedade do puzzle)
-
----
-
-## 🎓 Objetivos Educacionais
-
-Este projeto visa:
-
-✅ Compreender **análise de complexidade** na prática  
-✅ Comparar **implementações iterativas vs recursivas**  
-✅ Analisar **diferenças entre linguagens** (C vs Python)  
-✅ Investigar **melhor, pior caso**  
-✅ Relacionar **teoria com prática** em algoritmos NP-completos
+1. **Crescimento exponencial** com aumento de células vazias, confirmando a complexidade O(N^M) no pior caso
+2. **Diferença significativa** entre melhor e pior caso: a razão worst/best aumenta de 2.80× (3×3) para 2086.25× (9×9), demonstrando que o crescimento exponencial se torna dominante em problemas maiores
+3. **Impacto da linguagem**: C apresenta speedup de 3× a 64× em relação a Python, variando conforme a complexidade do problema
+4. **Variabilidade** mesmo com mesma configuração: puzzles diferentes com mesmo número de células vazias podem ter complexidades muito diferentes, dependendo da distribuição e da ordem das células vazias
 
 ---
 
