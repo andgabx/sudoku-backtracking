@@ -21,16 +21,16 @@ void generate_puzzles_for_config(const char* size_str, const char* case_str, int
     
     if (strcmp(size_str, "small") == 0) {
         size = 4;
-        best_empty = 8;
-        worst_empty = 5;
+        best_empty = 5;   // 30% - mais fácil (menos células vazias)
+        worst_empty = 8;  // 50% - mais difícil (mais células vazias)
     } else if (strcmp(size_str, "medium") == 0) {
         size = 9;
-        best_empty = 40;
-        worst_empty = 24;
+        best_empty = 24;  // 30% - mais fácil (menos células vazias)
+        worst_empty = 40; // 50% - mais difícil (mais células vazias)
     } else if (strcmp(size_str, "large") == 0) {
         size = 16;
-        best_empty = 128;
-        worst_empty = 77;
+        best_empty = 77;   // 30% - mais fácil (menos células vazias)
+        worst_empty = 128; // 50% - mais difícil (mais células vazias)
     } else {
         fprintf(stderr, "Tamanho inválido: %s\n", size_str);
         exit(1);

@@ -23,13 +23,13 @@ int main(int argc, char* argv[]) {
     
     if (strcmp(size_str, "small") == 0) {
         size = 4;
-        empty_cells = (strcmp(case_str, "best") == 0) ? 8 : 5;
+        empty_cells = (strcmp(case_str, "best") == 0) ? 5 : 8;  // best=30%, worst=50%
     } else if (strcmp(size_str, "medium") == 0) {
         size = 9;
-        empty_cells = (strcmp(case_str, "best") == 0) ? 40 : 24;
+        empty_cells = (strcmp(case_str, "best") == 0) ? 24 : 40; // best=30%, worst=50%
     } else if (strcmp(size_str, "large") == 0) {
         size = 16;
-        empty_cells = (strcmp(case_str, "best") == 0) ? 128 : 77;
+        empty_cells = (strcmp(case_str, "best") == 0) ? 77 : 128; // best=30%, worst=50%
     } else {
         printf("Tamanho inválido. Use: small, medium ou large\n");
         return 1;

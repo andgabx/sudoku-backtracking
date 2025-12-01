@@ -17,9 +17,9 @@ def main():
     # Define tamanho do Sudoku e células vazias
 
     size_map = {
-        'small': (4, 8, 5),        # 4x4: best=8 (50%), worst=5 (31%)
-        'medium': (9, 40, 24),     # 9x9: best=40 (49%), worst=24 (30%)
-        'large': (16, 128, 77)     # 16x16: best=128 (50%), worst=77 (30%)
+        'small': (4, 5, 8),        # 4x4: best=5 (31%), worst=8 (50%)
+        'medium': (9, 24, 40),      # 9x9: best=24 (30%), worst=40 (49%)
+        'large': (16, 77, 128)      # 16x16: best=77 (30%), worst=128 (50%)
     }
     
     if size_str not in size_map:

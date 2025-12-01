@@ -469,12 +469,12 @@ make build-generator
 ```
 
 Este comando gera 6 arquivos em `puzzle_seeds/`:
-- `small_best.txt` - 30 puzzles 4×4 com 8 células vazias (50%)
-- `small_worst.txt` - 30 puzzles 4×4 com 5 células vazias (31%)
-- `medium_best.txt` - 30 puzzles 9×9 com 40 células vazias (49%)
-- `medium_worst.txt` - 30 puzzles 9×9 com 24 células vazias (30%)
-- `large_best.txt` - 30 puzzles 16×16 com 128 células vazias (50%)
-- `large_worst.txt` - 30 puzzles 16×16 com 77 células vazias (30%)
+- `small_best.txt` - 30 puzzles 4×4 com 5 células vazias (31%) - mais fácil
+- `small_worst.txt` - 30 puzzles 4×4 com 8 células vazias (50%) - mais difícil
+- `medium_best.txt` - 30 puzzles 9×9 com 24 células vazias (30%) - mais fácil
+- `medium_worst.txt` - 30 puzzles 9×9 com 40 células vazias (49%) - mais difícil
+- `large_best.txt` - 30 puzzles 16×16 com 77 células vazias (30%) - mais fácil
+- `large_worst.txt` - 30 puzzles 16×16 com 128 células vazias (50%) - mais difícil
 
 **Formato dos arquivos:**
 Cada arquivo `.txt` contém 30 puzzles no formato visual. Para Sudokus 16×16, números de 10-16 são representados como A-G:
@@ -531,13 +531,13 @@ make help
 
 | Tamanho | Dimensão | Melhor Caso (vazias) | Pior Caso (vazias) |
 |---------|----------|----------------------|--------------------|
-| Small   | 4×4      | 8 (50%)              | 5 (31%)             |
-| Medium  | 9×9      | 40 (49%)             | 24 (30%)            |
-| Large   | 16×16    | 128 (50%)            | 77 (30%)            |
+| Small   | 4×4      | 5 (31%)              | 8 (50%)             |
+| Medium  | 9×9      | 24 (30%)             | 40 (49%)            |
+| Large   | 16×16    | 77 (30%)             | 128 (50%)           |
 
-**Melhor Caso**: Puzzles com aproximadamente 50% das células vazias. O algoritmo encontra a solução mais rapidamente, com menos backtracking. A heurística MRV ajuda a processar células mais restritas primeiro, encontrando conflitos mais cedo.
+**Melhor Caso**: Puzzles com aproximadamente 30% das células vazias. O algoritmo encontra a solução mais rapidamente, com menos backtracking, pois há menos células para preencher. A heurística MRV ajuda a processar células mais restritas primeiro, encontrando conflitos mais cedo.
 
-**Pior Caso**: Puzzles com aproximadamente 30% das células vazias. Estes são geralmente mais difíceis de resolver, exigindo mais backtracking e iterações. A heurística MRV é especialmente benéfica nestes casos, reduzindo significativamente o espaço de busca.
+**Pior Caso**: Puzzles com aproximadamente 50% das células vazias. Estes são mais difíceis de resolver, exigindo mais backtracking e iterações, pois há mais células para preencher e mais combinações possíveis. A heurística MRV é especialmente benéfica nestes casos, reduzindo significativamente o espaço de busca.
 
 ---
 

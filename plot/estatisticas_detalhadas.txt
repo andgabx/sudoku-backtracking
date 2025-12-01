@@ -14,10 +14,30 @@ SMALL (4×4) - Best Case:
   Execuções bem-sucedidas: 30/30
 
   TEMPO DE EXECUÇÃO:
-    Tempo total:        0.000334 segundos (0.33 ms)
-    Tempo médio:        0.000011 segundos (0.01 ms)
-    Desvio-padrão:      0.000002 segundos (0.00 ms)
-    Coeficiente de variação: 17.66%
+    Tempo total:        0.000157 segundos (0.16 ms)
+    Tempo médio:        0.000005 segundos (0.01 ms)
+    Desvio-padrão:      0.000006 segundos (0.01 ms)
+    Coeficiente de variação: 117.64%
+
+  ITERAÇÕES:
+    Média:              5.00
+    Desvio-padrão:      0.00
+    Coeficiente de variação: 0.00%
+
+  ESTATÍSTICAS DOS TEMPOS INDIVIDUAIS (30 execuções):
+    Mínimo:            0.000002 segundos (0.00 ms)
+    Máximo:            0.000025 segundos (0.03 ms)
+    Mediana:           0.000003 segundos (0.00 ms)
+
+SMALL (4×4) - Worst Case:
+--------------------------------------------------------------------------------
+  Execuções bem-sucedidas: 30/30
+
+  TEMPO DE EXECUÇÃO:
+    Tempo total:        0.000641 segundos (0.64 ms)
+    Tempo médio:        0.000021 segundos (0.02 ms)
+    Desvio-padrão:      0.000014 segundos (0.01 ms)
+    Coeficiente de variação: 65.32%
 
   ITERAÇÕES:
     Média:              8.00
@@ -26,58 +46,18 @@ SMALL (4×4) - Best Case:
 
   ESTATÍSTICAS DOS TEMPOS INDIVIDUAIS (30 execuções):
     Mínimo:            0.000009 segundos (0.01 ms)
-    Máximo:            0.000020 segundos (0.02 ms)
-    Mediana:           0.000011 segundos (0.01 ms)
-
-SMALL (4×4) - Worst Case:
---------------------------------------------------------------------------------
-  Execuções bem-sucedidas: 30/30
-
-  TEMPO DE EXECUÇÃO:
-    Tempo total:        0.000137 segundos (0.14 ms)
-    Tempo médio:        0.000005 segundos (0.01 ms)
-    Desvio-padrão:      0.000003 segundos (0.00 ms)
-    Coeficiente de variação: 57.46%
-
-  ITERAÇÕES:
-    Média:              5.00
-    Desvio-padrão:      0.00
-    Coeficiente de variação: 0.00%
-
-  ESTATÍSTICAS DOS TEMPOS INDIVIDUAIS (30 execuções):
-    Mínimo:            0.000003 segundos (0.00 ms)
-    Máximo:            0.000019 segundos (0.02 ms)
-    Mediana:           0.000004 segundos (0.00 ms)
+    Máximo:            0.000057 segundos (0.06 ms)
+    Mediana:           0.000012 segundos (0.01 ms)
 
 MEDIUM (9×9) - Best Case:
 --------------------------------------------------------------------------------
   Execuções bem-sucedidas: 30/30
 
   TEMPO DE EXECUÇÃO:
-    Tempo total:        0.055215 segundos (55.22 ms)
-    Tempo médio:        0.001841 segundos (1.84 ms)
-    Desvio-padrão:      0.000270 segundos (0.27 ms)
-    Coeficiente de variação: 14.68%
-
-  ITERAÇÕES:
-    Média:              40.87
-    Desvio-padrão:      3.14
-    Coeficiente de variação: 7.68%
-
-  ESTATÍSTICAS DOS TEMPOS INDIVIDUAIS (30 execuções):
-    Mínimo:            0.001370 segundos (1.37 ms)
-    Máximo:            0.002662 segundos (2.66 ms)
-    Mediana:           0.001825 segundos (1.82 ms)
-
-MEDIUM (9×9) - Worst Case:
---------------------------------------------------------------------------------
-  Execuções bem-sucedidas: 30/30
-
-  TEMPO DE EXECUÇÃO:
-    Tempo total:        0.010899 segundos (10.90 ms)
-    Tempo médio:        0.000363 segundos (0.36 ms)
-    Desvio-padrão:      0.000037 segundos (0.04 ms)
-    Coeficiente de variação: 10.15%
+    Tempo total:        0.010764 segundos (10.76 ms)
+    Tempo médio:        0.000359 segundos (0.36 ms)
+    Desvio-padrão:      0.000058 segundos (0.06 ms)
+    Coeficiente de variação: 16.26%
 
   ITERAÇÕES:
     Média:              24.00
@@ -85,39 +65,39 @@ MEDIUM (9×9) - Worst Case:
     Coeficiente de variação: 0.00%
 
   ESTATÍSTICAS DOS TEMPOS INDIVIDUAIS (30 execuções):
-    Mínimo:            0.000302 segundos (0.30 ms)
-    Máximo:            0.000501 segundos (0.50 ms)
-    Mediana:           0.000362 segundos (0.36 ms)
+    Mínimo:            0.000277 segundos (0.28 ms)
+    Máximo:            0.000535 segundos (0.54 ms)
+    Mediana:           0.000352 segundos (0.35 ms)
+
+MEDIUM (9×9) - Worst Case:
+--------------------------------------------------------------------------------
+  Execuções bem-sucedidas: 30/30
+
+  TEMPO DE EXECUÇÃO:
+    Tempo total:        0.057209 segundos (57.21 ms)
+    Tempo médio:        0.001907 segundos (1.91 ms)
+    Desvio-padrão:      0.000354 segundos (0.35 ms)
+    Coeficiente de variação: 18.58%
+
+  ITERAÇÕES:
+    Média:              41.33
+    Desvio-padrão:      5.97
+    Coeficiente de variação: 14.45%
+
+  ESTATÍSTICAS DOS TEMPOS INDIVIDUAIS (30 execuções):
+    Mínimo:            0.001372 segundos (1.37 ms)
+    Máximo:            0.002833 segundos (2.83 ms)
+    Mediana:           0.001878 segundos (1.88 ms)
 
 LARGE (16×16) - Best Case:
 --------------------------------------------------------------------------------
   Execuções bem-sucedidas: 30/30
 
   TEMPO DE EXECUÇÃO:
-    Tempo total:        11.851877 segundos (11851.88 ms)
-    Tempo médio:        0.395063 segundos (395.06 ms)
-    Desvio-padrão:      0.378801 segundos (378.80 ms)
-    Coeficiente de variação: 95.88%
-
-  ITERAÇÕES:
-    Média:              524.60
-    Desvio-padrão:      653.38
-    Coeficiente de variação: 124.55%
-
-  ESTATÍSTICAS DOS TEMPOS INDIVIDUAIS (30 execuções):
-    Mínimo:            0.151018 segundos (151.02 ms)
-    Máximo:            1.756123 segundos (1756.12 ms)
-    Mediana:           0.256368 segundos (256.37 ms)
-
-LARGE (16×16) - Worst Case:
---------------------------------------------------------------------------------
-  Execuções bem-sucedidas: 30/30
-
-  TEMPO DE EXECUÇÃO:
-    Tempo total:        0.767928 segundos (767.93 ms)
-    Tempo médio:        0.025598 segundos (25.60 ms)
-    Desvio-padrão:      0.001665 segundos (1.67 ms)
-    Coeficiente de variação: 6.51%
+    Tempo total:        0.868973 segundos (868.97 ms)
+    Tempo médio:        0.028966 segundos (28.97 ms)
+    Desvio-padrão:      0.003454 segundos (3.45 ms)
+    Coeficiente de variação: 11.93%
 
   ITERAÇÕES:
     Média:              77.00
@@ -125,9 +105,29 @@ LARGE (16×16) - Worst Case:
     Coeficiente de variação: 0.00%
 
   ESTATÍSTICAS DOS TEMPOS INDIVIDUAIS (30 execuções):
-    Mínimo:            0.023234 segundos (23.23 ms)
-    Máximo:            0.029138 segundos (29.14 ms)
-    Mediana:           0.025225 segundos (25.23 ms)
+    Mínimo:            0.024712 segundos (24.71 ms)
+    Máximo:            0.039134 segundos (39.13 ms)
+    Mediana:           0.028366 segundos (28.37 ms)
+
+LARGE (16×16) - Worst Case:
+--------------------------------------------------------------------------------
+  Execuções bem-sucedidas: 30/30
+
+  TEMPO DE EXECUÇÃO:
+    Tempo total:        16.599840 segundos (16599.84 ms)
+    Tempo médio:        0.553328 segundos (553.33 ms)
+    Desvio-padrão:      0.592833 segundos (592.83 ms)
+    Coeficiente de variação: 107.14%
+
+  ITERAÇÕES:
+    Média:              950.87
+    Desvio-padrão:      1629.12
+    Coeficiente de variação: 171.33%
+
+  ESTATÍSTICAS DOS TEMPOS INDIVIDUAIS (30 execuções):
+    Mínimo:            0.162222 segundos (162.22 ms)
+    Máximo:            2.573380 segundos (2573.38 ms)
+    Mediana:           0.245688 segundos (245.69 ms)
 
 ================================================================================
 LINGUAGEM: PYTHON
@@ -139,30 +139,10 @@ SMALL (4×4) - Best Case:
   Execuções bem-sucedidas: 30/30
 
   TEMPO DE EXECUÇÃO:
-    Tempo total:        0.005470 segundos (5.47 ms)
-    Tempo médio:        0.000182 segundos (0.18 ms)
-    Desvio-padrão:      0.000038 segundos (0.04 ms)
-    Coeficiente de variação: 20.75%
-
-  ITERAÇÕES:
-    Média:              8.00
-    Desvio-padrão:      0.00
-    Coeficiente de variação: 0.00%
-
-  ESTATÍSTICAS DOS TEMPOS INDIVIDUAIS (30 execuções):
-    Mínimo:            0.000148 segundos (0.15 ms)
-    Máximo:            0.000297 segundos (0.30 ms)
-    Mediana:           0.000169 segundos (0.17 ms)
-
-SMALL (4×4) - Worst Case:
---------------------------------------------------------------------------------
-  Execuções bem-sucedidas: 30/30
-
-  TEMPO DE EXECUÇÃO:
-    Tempo total:        0.002063 segundos (2.06 ms)
-    Tempo médio:        0.000069 segundos (0.07 ms)
-    Desvio-padrão:      0.000013 segundos (0.01 ms)
-    Coeficiente de variação: 19.10%
+    Tempo total:        0.002320 segundos (2.32 ms)
+    Tempo médio:        0.000077 segundos (0.08 ms)
+    Desvio-padrão:      0.000008 segundos (0.01 ms)
+    Coeficiente de variação: 10.06%
 
   ITERAÇÕES:
     Média:              5.00
@@ -170,39 +150,39 @@ SMALL (4×4) - Worst Case:
     Coeficiente de variação: 0.00%
 
   ESTATÍSTICAS DOS TEMPOS INDIVIDUAIS (30 execuções):
-    Mínimo:            0.000059 segundos (0.06 ms)
-    Máximo:            0.000116 segundos (0.12 ms)
-    Mediana:           0.000065 segundos (0.07 ms)
+    Mínimo:            0.000070 segundos (0.07 ms)
+    Máximo:            0.000110 segundos (0.11 ms)
+    Mediana:           0.000075 segundos (0.08 ms)
+
+SMALL (4×4) - Worst Case:
+--------------------------------------------------------------------------------
+  Execuções bem-sucedidas: 30/30
+
+  TEMPO DE EXECUÇÃO:
+    Tempo total:        0.006672 segundos (6.67 ms)
+    Tempo médio:        0.000222 segundos (0.22 ms)
+    Desvio-padrão:      0.000060 segundos (0.06 ms)
+    Coeficiente de variação: 27.12%
+
+  ITERAÇÕES:
+    Média:              8.00
+    Desvio-padrão:      0.00
+    Coeficiente de variação: 0.00%
+
+  ESTATÍSTICAS DOS TEMPOS INDIVIDUAIS (30 execuções):
+    Mínimo:            0.000137 segundos (0.14 ms)
+    Máximo:            0.000375 segundos (0.38 ms)
+    Mediana:           0.000217 segundos (0.22 ms)
 
 MEDIUM (9×9) - Best Case:
 --------------------------------------------------------------------------------
   Execuções bem-sucedidas: 30/30
 
   TEMPO DE EXECUÇÃO:
-    Tempo total:        0.223208 segundos (223.21 ms)
-    Tempo médio:        0.007440 segundos (7.44 ms)
-    Desvio-padrão:      0.000800 segundos (0.80 ms)
-    Coeficiente de variação: 10.75%
-
-  ITERAÇÕES:
-    Média:              40.87
-    Desvio-padrão:      3.14
-    Coeficiente de variação: 7.68%
-
-  ESTATÍSTICAS DOS TEMPOS INDIVIDUAIS (30 execuções):
-    Mínimo:            0.005969 segundos (5.97 ms)
-    Máximo:            0.009525 segundos (9.53 ms)
-    Mediana:           0.007243 segundos (7.24 ms)
-
-MEDIUM (9×9) - Worst Case:
---------------------------------------------------------------------------------
-  Execuções bem-sucedidas: 30/30
-
-  TEMPO DE EXECUÇÃO:
-    Tempo total:        0.068929 segundos (68.93 ms)
-    Tempo médio:        0.002298 segundos (2.30 ms)
-    Desvio-padrão:      0.000359 segundos (0.36 ms)
-    Coeficiente de variação: 15.61%
+    Tempo total:        0.069908 segundos (69.91 ms)
+    Tempo médio:        0.002330 segundos (2.33 ms)
+    Desvio-padrão:      0.000220 segundos (0.22 ms)
+    Coeficiente de variação: 9.45%
 
   ITERAÇÕES:
     Média:              24.00
@@ -210,39 +190,39 @@ MEDIUM (9×9) - Worst Case:
     Coeficiente de variação: 0.00%
 
   ESTATÍSTICAS DOS TEMPOS INDIVIDUAIS (30 execuções):
-    Mínimo:            0.001895 segundos (1.90 ms)
-    Máximo:            0.003264 segundos (3.26 ms)
-    Mediana:           0.002217 segundos (2.22 ms)
+    Mínimo:            0.001971 segundos (1.97 ms)
+    Máximo:            0.003121 segundos (3.12 ms)
+    Mediana:           0.002334 segundos (2.33 ms)
+
+MEDIUM (9×9) - Worst Case:
+--------------------------------------------------------------------------------
+  Execuções bem-sucedidas: 30/30
+
+  TEMPO DE EXECUÇÃO:
+    Tempo total:        0.239110 segundos (239.11 ms)
+    Tempo médio:        0.007970 segundos (7.97 ms)
+    Desvio-padrão:      0.000959 segundos (0.96 ms)
+    Coeficiente de variação: 12.03%
+
+  ITERAÇÕES:
+    Média:              41.33
+    Desvio-padrão:      5.97
+    Coeficiente de variação: 14.45%
+
+  ESTATÍSTICAS DOS TEMPOS INDIVIDUAIS (30 execuções):
+    Mínimo:            0.006709 segundos (6.71 ms)
+    Máximo:            0.011623 segundos (11.62 ms)
+    Mediana:           0.007848 segundos (7.85 ms)
 
 LARGE (16×16) - Best Case:
 --------------------------------------------------------------------------------
   Execuções bem-sucedidas: 30/30
 
   TEMPO DE EXECUÇÃO:
-    Tempo total:        12.502607 segundos (12502.61 ms)
-    Tempo médio:        0.416754 segundos (416.75 ms)
-    Desvio-padrão:      0.432085 segundos (432.08 ms)
-    Coeficiente de variação: 103.68%
-
-  ITERAÇÕES:
-    Média:              524.60
-    Desvio-padrão:      653.38
-    Coeficiente de variação: 124.55%
-
-  ESTATÍSTICAS DOS TEMPOS INDIVIDUAIS (30 execuções):
-    Mínimo:            0.145001 segundos (145.00 ms)
-    Máximo:            1.964497 segundos (1964.50 ms)
-    Mediana:           0.258200 segundos (258.20 ms)
-
-LARGE (16×16) - Worst Case:
---------------------------------------------------------------------------------
-  Execuções bem-sucedidas: 30/30
-
-  TEMPO DE EXECUÇÃO:
-    Tempo total:        1.315363 segundos (1315.36 ms)
-    Tempo médio:        0.043845 segundos (43.84 ms)
-    Desvio-padrão:      0.003611 segundos (3.61 ms)
-    Coeficiente de variação: 8.24%
+    Tempo total:        1.372605 segundos (1372.61 ms)
+    Tempo médio:        0.045753 segundos (45.75 ms)
+    Desvio-padrão:      0.003840 segundos (3.84 ms)
+    Coeficiente de variação: 8.39%
 
   ITERAÇÕES:
     Média:              77.00
@@ -250,9 +230,29 @@ LARGE (16×16) - Worst Case:
     Coeficiente de variação: 0.00%
 
   ESTATÍSTICAS DOS TEMPOS INDIVIDUAIS (30 execuções):
-    Mínimo:            0.039994 segundos (39.99 ms)
-    Máximo:            0.058922 segundos (58.92 ms)
-    Mediana:           0.043215 segundos (43.22 ms)
+    Mínimo:            0.042024 segundos (42.02 ms)
+    Máximo:            0.061670 segundos (61.67 ms)
+    Mediana:           0.044638 segundos (44.64 ms)
+
+LARGE (16×16) - Worst Case:
+--------------------------------------------------------------------------------
+  Execuções bem-sucedidas: 30/30
+
+  TEMPO DE EXECUÇÃO:
+    Tempo total:        19.454386 segundos (19454.39 ms)
+    Tempo médio:        0.648480 segundos (648.48 ms)
+    Desvio-padrão:      0.849071 segundos (849.07 ms)
+    Coeficiente de variação: 130.93%
+
+  ITERAÇÕES:
+    Média:              950.87
+    Desvio-padrão:      1629.12
+    Coeficiente de variação: 171.33%
+
+  ESTATÍSTICAS DOS TEMPOS INDIVIDUAIS (30 execuções):
+    Mínimo:            0.148347 segundos (148.35 ms)
+    Máximo:            3.918411 segundos (3918.41 ms)
+    Mediana:           0.239711 segundos (239.71 ms)
 
 ================================================================================
 FIM DO RELATÓRIO

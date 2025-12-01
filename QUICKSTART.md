@@ -35,7 +35,7 @@ make run SIZE=medium CASE=best LANG=c
 
 **Opções:**
 - `SIZE`: `small` (4x4), `medium` (9x9), `large` (16x16)
-- `CASE`: `best` (poucas células vazias), `worst` (muitas células vazias)
+- `CASE`: `best` (30% células vazias - mais fácil), `worst` (50% células vazias - mais difícil)
 - `LANG`: `c`, `python`
 
 ---
