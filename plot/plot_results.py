@@ -54,7 +54,7 @@ plt.rcParams['figure.figsize'] = (14, 8)
 plt.rcParams['font.size'] = 10
 
 def parse_log_file(filename):
-    """Extrai dados estatísticos de um arquivo de log."""
+    """Extrai dados estatísticos de um arquivo de log, incluindo todos os tempos individuais."""
     if not os.path.exists(filename):
         return None
     
@@ -66,7 +66,28 @@ def parse_log_file(filename):
     case_match = re.search(r'Caso: (\w+)', content)
     success_match = re.search(r'Resoluções bem-sucedidas: (\d+)/(\d+)', content)
     avg_time_match = re.search(r'Tempo médio: ([\d.]+) segundos', content)
+    total_time_match = re.search(r'Tempo total: ([\d.]+) segundos', content)
     avg_iter_match = re.search(r'Iterações médias: ([\d.]+)', content)
+    
+    # Extrair todos os tempos individuais de cada execução
+    # Padrão mais flexível que aceita diferentes formatos de espaçamento
+    time_pattern = r'Execução \d+:\s*\n\s*Células vazias: \d+\s*\n\s*Tempo: ([\d.]+)\s+segundos'
+    individual_times = re.findall(time_pattern, content)
+    individual_times = [float(t) for t in individual_times if t]
+    
+    # Calcular média e desvio-padrão dos tempos individuais
+    mean_time = np.mean(individual_times) if individual_times else 0.0
+    std_time = np.std(individual_times, ddof=1) if len(individual_times) > 1 else 0.0
+    
+    # Extrair todas as iterações individuais
+    # Padrão mais flexível que aceita diferentes formatos de espaçamento
+    iter_pattern = r'Execução \d+:\s*\n\s*Células vazias: \d+\s*\n\s*Tempo: [\d.]+\s+segundos\s*\n\s*Iterações: (\d+)'
+    individual_iters = re.findall(iter_pattern, content)
+    individual_iters = [int(i) for i in individual_iters if i]
+    
+    # Calcular média e desvio-padrão das iterações individuais
+    mean_iter = np.mean(individual_iters) if individual_iters else 0.0
+    std_iter = np.std(individual_iters, ddof=1) if len(individual_iters) > 1 else 0.0
     
     return {
         'language': lang_match.group(1) if lang_match else 'N/A',
@@ -74,8 +95,13 @@ def parse_log_file(filename):
         'case': case_match.group(1) if case_match else 'N/A',
         'successful': int(success_match.group(1)) if success_match else 0,
         'total_runs': int(success_match.group(2)) if success_match else 0,
-        'avg_time': float(avg_time_match.group(1)) if avg_time_match else 0.0,
-        'avg_iterations': float(avg_iter_match.group(1)) if avg_iter_match else 0.0
+        'avg_time': float(avg_time_match.group(1)) if avg_time_match else mean_time,
+        'total_time': float(total_time_match.group(1)) if total_time_match else sum(individual_times),
+        'std_time': std_time,
+        'avg_iterations': float(avg_iter_match.group(1)) if avg_iter_match else mean_iter,
+        'std_iterations': std_iter,
+        'individual_times': individual_times,
+        'individual_iterations': individual_iters
     }
 
 def load_data(logs_dir):
@@ -108,6 +134,13 @@ def load_data(logs_dir):
         return None
     
     df = pd.DataFrame(results)
+    
+    # Adicionar colunas calculadas para facilitar plotagem
+    if not df.empty:
+        df['avg_time_ms'] = df['avg_time'] * 1000  # Converter para milissegundos
+        df['std_time_ms'] = df['std_time'] * 1000
+        df['total_time_ms'] = df['total_time'] * 1000
+    
     return df
 
 def plot_time_comparison(df, output_dir):
@@ -574,6 +607,175 @@ def plot_best_vs_worst(df, output_dir):
     plt.close()
     print("✓ Gráfico 3 salvo: 3_best_vs_worst.png")
 
+def generate_statistics_report(df, output_dir):
+    """Gera um relatório em texto com estatísticas detalhadas (média, desvio-padrão, tempo total)."""
+    report_path = output_dir / 'estatisticas_detalhadas.txt'
+    
+    with open(report_path, 'w', encoding='utf-8') as f:
+        f.write("="*80 + "\n")
+        f.write("RELATÓRIO DE ESTATÍSTICAS DETALHADAS\n")
+        f.write("Análise de Complexidade - Backtracking Iterativo para Sudoku\n")
+        f.write("="*80 + "\n\n")
+        
+        # Agrupar por linguagem, tamanho e caso
+        for lang in ['c', 'python']:
+            lang_name = 'C' if lang == 'c' else 'Python'
+            f.write(f"\n{'='*80}\n")
+            f.write(f"LINGUAGEM: {lang_name.upper()}\n")
+            f.write(f"{'='*80}\n\n")
+            
+            for size_str in ['small', 'medium', 'large']:
+                size_map = {'small': 4, 'medium': 9, 'large': 16}
+                size = size_map[size_str]
+                
+                for case in ['best', 'worst']:
+                    case_name = 'Best Case' if case == 'best' else 'Worst Case'
+                    row = df[(df['lang'] == lang) & (df['size_str'] == size_str) & (df['case'] == case)]
+                    
+                    if not row.empty:
+                        r = row.iloc[0]
+                        f.write(f"\n{size_str.upper()} ({size}×{size}) - {case_name}:\n")
+                        f.write(f"{'-'*80}\n")
+                        f.write(f"  Execuções bem-sucedidas: {r['successful']}/{r['total_runs']}\n")
+                        f.write(f"\n  TEMPO DE EXECUÇÃO:\n")
+                        f.write(f"    Tempo total:        {r['total_time']:.6f} segundos ({r['total_time_ms']:.2f} ms)\n")
+                        f.write(f"    Tempo médio:        {r['avg_time']:.6f} segundos ({r['avg_time_ms']:.2f} ms)\n")
+                        f.write(f"    Desvio-padrão:      {r['std_time']:.6f} segundos ({r['std_time_ms']:.2f} ms)\n")
+                        f.write(f"    Coeficiente de variação: {(r['std_time']/r['avg_time']*100) if r['avg_time'] > 0 else 0:.2f}%\n")
+                        f.write(f"\n  ITERAÇÕES:\n")
+                        f.write(f"    Média:              {r['avg_iterations']:.2f}\n")
+                        f.write(f"    Desvio-padrão:      {r['std_iterations']:.2f}\n")
+                        f.write(f"    Coeficiente de variação: {(r['std_iterations']/r['avg_iterations']*100) if r['avg_iterations'] > 0 else 0:.2f}%\n")
+                        
+                        # Estatísticas dos tempos individuais
+                        try:
+                            times = r.get('individual_times', [])
+                            if isinstance(times, list) and len(times) > 0:
+                                f.write(f"\n  ESTATÍSTICAS DOS TEMPOS INDIVIDUAIS ({len(times)} execuções):\n")
+                                f.write(f"    Mínimo:            {min(times):.6f} segundos ({min(times)*1000:.2f} ms)\n")
+                                f.write(f"    Máximo:            {max(times):.6f} segundos ({max(times)*1000:.2f} ms)\n")
+                                f.write(f"    Mediana:           {np.median(times):.6f} segundos ({np.median(times)*1000:.2f} ms)\n")
+                        except (KeyError, TypeError, AttributeError):
+                            pass  # Ignorar se não houver dados individuais
+        
+        f.write(f"\n{'='*80}\n")
+        f.write("FIM DO RELATÓRIO\n")
+        f.write(f"{'='*80}\n")
+    
+    print(f"✓ Relatório de estatísticas salvo: estatisticas_detalhadas.txt")
+
+def plot_standard_deviation(df, output_dir):
+    """Gráfico 5: Desvio-padrão dos tempos de execução por configuração."""
+    fig, axes = plt.subplots(1, 2, figsize=(16, 6))
+    
+    sizes = sorted(df['size'].unique())
+    size_labels = {4: 'Small (4×4)', 9: 'Medium (9×9)', 16: 'Large (16×16)'}
+    
+    # Gráfico 1: Best Case
+    ax1 = axes[0]
+    x = np.arange(len(sizes))
+    width = 0.35
+    
+    c_best_std = []
+    py_best_std = []
+    
+    for s in sizes:
+        c_data = df[(df['size'] == s) & (df['case'] == 'best') & (df['lang'] == 'c')]
+        py_data = df[(df['size'] == s) & (df['case'] == 'best') & (df['lang'] == 'python')]
+        
+        c_std = c_data['std_time_ms'].values[0] if not c_data.empty else 0
+        py_std = py_data['std_time_ms'].values[0] if not py_data.empty else 0
+        
+        c_best_std.append(c_std)
+        py_best_std.append(py_std)
+    
+    bars1 = ax1.bar(x - width/2, c_best_std, width, label='C (Compilado)', 
+                    color='#2E86AB', alpha=0.8, edgecolor='black', linewidth=1.5)
+    bars2 = ax1.bar(x + width/2, py_best_std, width, label='Python (Interpretado)', 
+                    color='#A23B72', alpha=0.8, edgecolor='black', linewidth=1.5)
+    
+    # Adicionar valores nas barras
+    for bars in [bars1, bars2]:
+        for bar in bars:
+            height = bar.get_height()
+            if height > 0:
+                if height < 0.01:
+                    std_text = f'{height:.4f}'
+                elif height < 0.1:
+                    std_text = f'{height:.3f}'
+                elif height < 1:
+                    std_text = f'{height:.2f}'
+                else:
+                    std_text = f'{height:.1f}'
+                ax1.text(bar.get_x() + bar.get_width()/2., height,
+                        std_text,
+                        ha='center', va='bottom', fontsize=8, fontweight='bold',
+                        bbox=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.9, edgecolor='black', linewidth=1))
+    
+    ax1.set_xlabel('Tamanho do Sudoku', fontweight='bold', fontsize=11)
+    ax1.set_ylabel('Desvio-padrão (ms)', fontweight='bold', fontsize=11)
+    ax1.set_title('Desvio-padrão dos Tempos - Best Case\nVariabilidade da Performance', 
+                  fontsize=14, fontweight='bold', pad=20)
+    ax1.set_xticks(x)
+    ax1.set_xticklabels([size_labels[s] for s in sizes])
+    ax1.set_yscale('log')
+    ax1.grid(True, alpha=0.3, which='both', axis='y')
+    ax1.legend(loc='upper left', fontsize=10)
+    
+    # Gráfico 2: Worst Case
+    ax2 = axes[1]
+    
+    c_worst_std = []
+    py_worst_std = []
+    
+    for s in sizes:
+        c_data = df[(df['size'] == s) & (df['case'] == 'worst') & (df['lang'] == 'c')]
+        py_data = df[(df['size'] == s) & (df['case'] == 'worst') & (df['lang'] == 'python')]
+        
+        c_std = c_data['std_time_ms'].values[0] if not c_data.empty else 0
+        py_std = py_data['std_time_ms'].values[0] if not py_data.empty else 0
+        
+        c_worst_std.append(c_std)
+        py_worst_std.append(py_std)
+    
+    bars3 = ax2.bar(x - width/2, c_worst_std, width, label='C (Compilado)', 
+                    color='#06A77D', alpha=0.8, edgecolor='black', linewidth=1.5)
+    bars4 = ax2.bar(x + width/2, py_worst_std, width, label='Python (Interpretado)', 
+                    color='#F18F01', alpha=0.8, edgecolor='black', linewidth=1.5)
+    
+    # Adicionar valores nas barras
+    for bars in [bars3, bars4]:
+        for bar in bars:
+            height = bar.get_height()
+            if height > 0:
+                if height < 0.01:
+                    std_text = f'{height:.4f}'
+                elif height < 0.1:
+                    std_text = f'{height:.3f}'
+                elif height < 1:
+                    std_text = f'{height:.2f}'
+                else:
+                    std_text = f'{height:.1f}'
+                ax2.text(bar.get_x() + bar.get_width()/2., height,
+                        std_text,
+                        ha='center', va='bottom', fontsize=8, fontweight='bold',
+                        bbox=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.9, edgecolor='black', linewidth=1))
+    
+    ax2.set_xlabel('Tamanho do Sudoku', fontweight='bold', fontsize=11)
+    ax2.set_ylabel('Desvio-padrão (ms)', fontweight='bold', fontsize=11)
+    ax2.set_title('Desvio-padrão dos Tempos - Worst Case\nVariabilidade da Performance', 
+                  fontsize=14, fontweight='bold', pad=20)
+    ax2.set_xticks(x)
+    ax2.set_xticklabels([size_labels[s] for s in sizes])
+    ax2.set_yscale('log')
+    ax2.grid(True, alpha=0.3, which='both', axis='y')
+    ax2.legend(loc='upper left', fontsize=10)
+    
+    plt.tight_layout()
+    plt.savefig(output_dir / '5_desvio_padrao.png', dpi=300, bbox_inches='tight')
+    plt.close()
+    print("✓ Gráfico 5 salvo: 5_desvio_padrao.png")
+
 def main():
     # Diretórios
     script_dir = Path(__file__).parent
@@ -602,12 +804,16 @@ def main():
     
     print(f"✓ {len(df)} configurações carregadas\n")
     
+    # Gerar relatório de estatísticas
+    generate_statistics_report(df, output_dir)
+    
     # Gerar gráficos
     print("Gerando gráficos...\n")
     plot_time_comparison(df, output_dir)
     plot_time_vs_iterations(df, output_dir)
     plot_best_vs_worst(df, output_dir)
     plot_summary(df, output_dir)
+    plot_standard_deviation(df, output_dir)
     
     print("\n" + "="*80)
     print("✅ Todos os gráficos foram gerados com sucesso!")
@@ -617,7 +823,8 @@ def main():
     print("  1. 1_tempo_comparacao.png - Comparação de tempo C vs Python")
     print("  2. 2_tempo_vs_iteracoes.png - Tempo vs Iterações (Eficiência)")
     print("  3. 3_best_vs_worst.png - Comparação Best vs Worst Case")
-    print("  4. 4_resumo_desempenho.png - Análise de desempenho (resumo)\n")
+    print("  4. 4_resumo_desempenho.png - Análise de desempenho (resumo)")
+    print("  5. 5_desvio_padrao.png - Desvio-padrão dos tempos (Variabilidade)\n")
 
 if __name__ == "__main__":
     main()
