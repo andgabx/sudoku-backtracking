@@ -32,7 +32,12 @@ def solve_sudoku_iterativo(sudoku: Sudoku) -> SolveResult:
         end_time = time.time()
         return SolveResult(time_seconds=end_time - start_time, iterations=0, solved=True)
 
+    # 2. Ordenar células vazias por MRV (Minimum Remaining Values)
+    # Células com menos valores possíveis são processadas primeiro
+    _sort_empty_cells_by_mrv(sudoku, lista_vazias, 0, total_vazias)
+
     k = 0  # Índice da célula vazia atual
+    last_k = -1  # Último valor de k para detectar quando avançamos
 
     while -1 < k < total_vazias:
         iterations += 1
@@ -40,6 +45,13 @@ def solve_sudoku_iterativo(sudoku: Sudoku) -> SolveResult:
         # Print de progresso a cada 10 milhões de iterações (para puzzles grandes)
         if iterations % 10000000 == 0:
             print(f"  ... {iterations} iterações e contando...")
+        
+        # Reordenar células restantes por MRV apenas quando avançamos (não quando recuamos)
+        # Isso evita reordenações desnecessárias durante backtracking
+        if k > last_k and k < total_vazias - 1:
+            _sort_empty_cells_by_mrv(sudoku, lista_vazias, k, total_vazias)
+        
+        last_k = k
         
         cell = lista_vazias[k]
         r, c = cell.row, cell.col
@@ -59,6 +71,14 @@ def solve_sudoku_iterativo(sudoku: Sudoku) -> SolveResult:
     solved = k == total_vazias
     return SolveResult(time_seconds=end_time - start_time, iterations=iterations, solved=solved)
 
+def _count_possible_values(sudoku: Sudoku, r: int, c: int) -> int:
+    """Conta quantos valores são possíveis para a célula [r][c]."""
+    count = 0
+    for num in range(1, sudoku.size + 1):
+        if _is_safe(sudoku, r, c, num):
+            count += 1
+    return count
+
 def _find_all_empty_cells(sudoku: Sudoku) -> List[Coordenada]:
     """Encontra todas as células vazias e retorna uma lista de coordenadas."""
     empty_cells = []
@@ -67,6 +87,13 @@ def _find_all_empty_cells(sudoku: Sudoku) -> List[Coordenada]:
             if sudoku.grid[r][c] == 0:
                 empty_cells.append(Coordenada(r, c))
     return empty_cells
+
+def _sort_empty_cells_by_mrv(sudoku: Sudoku, lista_vazias: List[Coordenada], start: int, end: int) -> None:
+    """Ordena células vazias por MRV (Minimum Remaining Values) - menor número de valores possíveis primeiro."""
+    # Ordena do índice start até end (exclusivo) por número de valores possíveis
+    sublist = lista_vazias[start:end]
+    sublist.sort(key=lambda cell: _count_possible_values(sudoku, cell.row, cell.col))
+    lista_vazias[start:end] = sublist
 
 def _find_next_valid_number(sudoku: Sudoku, r: int, c: int, num_inicio: int) -> int:
     """Encontra o próximo número válido para a célula [r][c]."""

@@ -218,8 +218,8 @@ def plot_time_vs_iterations(df, output_dir):
     
     sizes = sorted(df['size'].unique())
     size_labels = {4: 'Small (4×4)', 9: 'Medium (9×9)', 16: 'Large (16×16)'}
-    colors_c = {3: '#2E86AB', 6: '#1B5E7A', 9: '#0D3B5A'}
-    colors_py = {3: '#A23B72', 6: '#7A2B54', 9: '#521C36'}
+    colors_c = {4: '#2E86AB', 9: '#1B5E7A', 16: '#0D3B5A'}
+    colors_py = {4: '#A23B72', 9: '#7A2B54', 16: '#521C36'}
     
     def format_time_label(value):
         """Formata tempo para label"""
@@ -265,8 +265,8 @@ def plot_time_vs_iterations(df, output_dir):
             
             # Labels com valores explícitos - posicionamento inteligente
             # Label para C (à esquerda do ponto se for Small, acima se for Medium/Large)
-            offset_x_c = -35 if s == 3 else 0
-            offset_y_c = 25 if s == 3 else 30
+            offset_x_c = -35 if s == 4 else 0
+            offset_y_c = 25 if s == 4 else 30
             ax1.annotate(f'C {size_labels[s]}\nTempo: {format_time_label(c_time)}\nIter: {format_iter_label(c_iter)}',
                         xy=(c_iter, c_time), xytext=(offset_x_c, offset_y_c),
                         textcoords='offset points', ha='center', va='bottom',
@@ -275,8 +275,8 @@ def plot_time_vs_iterations(df, output_dir):
                         arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=0', lw=2, color='black'))
             
             # Label para Python (à direita do ponto se for Small, acima se for Medium/Large)
-            offset_x_py = 35 if s == 3 else 0
-            offset_y_py = 25 if s == 3 else 30
+            offset_x_py = 35 if s == 4 else 0
+            offset_y_py = 25 if s == 4 else 30
             ax1.annotate(f'Python {size_labels[s]}\nTempo: {format_time_label(py_time)}\nIter: {format_iter_label(py_iter)}',
                         xy=(py_iter, py_time), xytext=(offset_x_py, offset_y_py),
                         textcoords='offset points', ha='center', va='bottom',
@@ -324,7 +324,7 @@ def plot_time_vs_iterations(df, output_dir):
             
             # Labels com valores explícitos - posicionamento inteligente para evitar sobreposição
             # No Worst Case, Small e Medium têm iterações muito próximas, então precisamos de offsets maiores
-            if s == 3:  # Small
+            if s == 4:  # Small
                 offset_x_c = -50
                 offset_y_c = 20
                 offset_x_py = 50

@@ -16,7 +16,9 @@ Este projeto implementa e analisa a complexidade de tempo do algoritmo de **Back
    - **C**: Array de coordenadas (`Coordenada[]`) para armazenar células vazias
    - **Python**: Lista de tuplas `Coordenada` para armazenar células vazias
 
-✅ **Gerador de Puzzles Válidos** com configurações controladas de dificuldade
+✅ **Heurística MRV (Minimum Remaining Values)**: Otimiza a escolha da próxima célula vazia, priorizando células com menos valores possíveis, reduzindo significativamente o espaço de busca
+
+✅ **Gerador de Puzzles em C** com configurações controladas de dificuldade, usando LCG (Linear Congruential Generator) para garantir puzzles válidos
 
 ✅ **Sistema de Logging** completo salvando resultados em arquivos
 
@@ -32,7 +34,8 @@ sudoku_backtracking/
 ├── c/                          # Implementação em C
 │   ├── include/                # Headers (.h)
 │   │   ├── sudoku.h           # Estrutura e operações do Sudoku
-│   │   └── backtracking.h     # Algoritmo de backtracking iterativo
+│   │   ├── backtracking.h     # Algoritmo de backtracking iterativo e heurística MRV
+│   │   └── generator.h        # Gerador de puzzles (LCG, fill_sudoku, generate_sudoku)
 │   │
 │   └── src/                    # Código fonte (.c)
 │       ├── main.c             # ← Função principal do código em C
@@ -43,9 +46,11 @@ sudoku_backtracking/
 │       │                        #    - Gera logs com resultados (tempo, iterações)
 │       │
 │       ├── backtracking.c     # ← Implementação do algoritmo de backtracking iterativo
-│       │                        #    - solve_sudoku_iterative(): algoritmo principal
+│       │                        #    - solve_sudoku_iterative(): algoritmo principal com MRV
 │       │                        #    - find_all_empty_cells(): encontra células vazias
 │       │                        #    - find_next_valid_number(): busca próximo valor válido
+│       │                        #    - count_possible_values(): conta valores possíveis (MRV)
+│       │                        #    - sort_empty_cells_by_mrv(): ordena células por MRV
 │       │                        #    - is_safe(), is_in_row(), is_in_col(), is_in_box(): validações
 │       │
 │       ├── sudoku.c           # ← Implementação das operações básicas do Sudoku
@@ -55,11 +60,23 @@ sudoku_backtracking/
 │       │                        #    - sudoku_print(): imprime o Sudoku
 │       │                        #    - count_empty_cells(): conta células vazias
 │       │                        #    - sudoku_parse_from_string(): converte string para Sudoku
+│       │                        #    - num_to_char(), char_to_num(): conversão 1-9 e A-G
 │       │
-│       └── puzzle_loader.c    # ← Carregamento de puzzles de arquivos
-│                                #    - load_puzzle_from_file(): lê um puzzle do arquivo
-│                                #    - Parse do formato texto (com separadores | e -)
-│                                #    - Retorna Sudoku pronto para resolução
+│       ├── puzzle_loader.c    # ← Carregamento de puzzles de arquivos
+│       │                        #    - load_puzzle_from_file(): lê um puzzle do arquivo
+│       │                        #    - Parse do formato texto (com separadores | e -)
+│       │                        #    - Retorna Sudoku pronto para resolução
+│       │
+│       ├── generator.c        # ← Implementação do gerador de puzzles
+│       │                        #    - lcg_seed(), lcg_next(): Linear Congruential Generator
+│       │                        #    - shuffle(): algoritmo Fisher-Yates
+│       │                        #    - fill_sudoku(): preenche Sudoku completo recursivamente
+│       │                        #    - generate_sudoku(): gera puzzle com células vazias
+│       │                        #    - sudoku_to_string(): converte Sudoku para formato texto
+│       │
+│       └── puzzle_generator.c # ← Programa principal para gerar arquivos de puzzles
+│                                #    - generate_puzzles_for_config(): gera 30 puzzles por config
+│                                #    - Salva puzzles em puzzle_seeds/{size}_{case}.txt
 │
 ├── python/                     # Implementação em Python
 │   └── src/                    # Módulos Python
@@ -71,9 +88,11 @@ sudoku_backtracking/
 │       │                        #    - Gera logs com resultados (tempo, iterações)
 │       │
 │       ├── backtracking.py    # ← Algoritmo de backtracking iterativo
-│       │                        #    - solve_sudoku_iterativo(): algoritmo principal
+│       │                        #    - solve_sudoku_iterativo(): algoritmo principal com MRV
 │       │                        #    - _find_all_empty_cells(): encontra células vazias
 │       │                        #    - _find_next_valid_number(): busca próximo valor válido
+│       │                        #    - _count_possible_values(): conta valores possíveis (MRV)
+│       │                        #    - _sort_empty_cells_by_mrv(): ordena células por MRV
 │       │                        #    - _is_safe(), _is_in_row(), _is_in_col(), _is_in_box(): validações
 │       │
 │       ├── sudoku.py          # ← Classe Sudoku e operações básicas
@@ -174,9 +193,10 @@ Este comando:
 - Cada combinação executa 30 testes em C e 30 em Python (com puzzles pré-gerados compartilhados)
 - Gera 12 arquivos de log com resultados completos
 
-**ℹ️ Nota**: Os puzzles são gerados automaticamente antes de cada execução. Se quiser gerar manualmente:
+**ℹ️ Nota**: Os puzzles são gerados automaticamente antes de cada execução usando o gerador em C. Se quiser gerar manualmente:
 ```bash
-python3 generate_sudoku_puzzles.py
+make build-generator
+./c/bin/puzzle_generator
 ```
 
 **⏱️ Tempo estimado**: 5-15 minutos (dependendo do hardware)
@@ -457,7 +477,7 @@ Este comando gera 6 arquivos em `puzzle_seeds/`:
 - `large_worst.txt` - 30 puzzles 16×16 com 77 células vazias (30%)
 
 **Formato dos arquivos:**
-Cada arquivo `.txt` contém 30 puzzles no formato visual:
+Cada arquivo `.txt` contém 30 puzzles no formato visual. Para Sudokus 16×16, números de 10-16 são representados como A-G:
 ```
 === Puzzle 1/30 ===
 3 | 2 | 0
@@ -473,6 +493,9 @@ Cada arquivo `.txt` contém 30 puzzles no formato visual:
 ------
 3 | 1 | 0
 
+=== Puzzle 1/30 (16×16) ===
+1 | 2 | 3 | A
+4 | 5 | 6 | B
 ...
 ```
 
@@ -512,9 +535,9 @@ make help
 | Medium  | 9×9      | 40 (49%)             | 24 (30%)            |
 | Large   | 16×16    | 128 (50%)            | 77 (30%)            |
 
-**Melhor Caso**: Puzzles com poucas células vazias (2, 9, 23 respectivamente). O algoritmo encontra a solução rapidamente, com complexidade O(M), onde M é o número de células vazias. Os valores corretos são encontrados na primeira tentativa para cada célula, resultando em mínimo backtracking.
+**Melhor Caso**: Puzzles com aproximadamente 50% das células vazias. O algoritmo encontra a solução mais rapidamente, com menos backtracking. A heurística MRV ajuda a processar células mais restritas primeiro, encontrando conflitos mais cedo.
 
-**Pior Caso**: Puzzles com muitas células vazias (5, 22, 55 respectivamente). O algoritmo precisa explorar muitas combinações de valores, exigindo backtracking extensivo. A complexidade é O(N^M), onde N é o tamanho do Sudoku e M o número de células vazias, resultando em crescimento exponencial de iterações.
+**Pior Caso**: Puzzles com aproximadamente 30% das células vazias. Estes são geralmente mais difíceis de resolver, exigindo mais backtracking e iterações. A heurística MRV é especialmente benéfica nestes casos, reduzindo significativamente o espaço de busca.
 
 ---
 
@@ -583,6 +606,7 @@ k = 0  # Índice da célula vazia atual
 1. **Inicialização**: 
    - Encontra todas as células vazias usando `find_all_empty_cells()` (C) ou `_find_all_empty_cells()` (Python)
    - Armazena as coordenadas em `lista_vazias` e obtém `total_vazias`
+   - **Ordena células vazias por MRV** (Minimum Remaining Values): células com menos valores possíveis são processadas primeiro
    - Inicializa índice `k = 0` (primeira célula vazia)
    - Se `total_vazias == 0`, o Sudoku já está resolvido
 
@@ -594,6 +618,7 @@ k = 0  # Índice da célula vazia atual
    - Se encontrar número válido (`num_valido <= size`):
      - Coloca o número na célula: `grid[r][c] = num_valido`
      - Incrementa `k++` (avança para próxima célula vazia)
+     - **Reordena células restantes por MRV** (apenas quando avançamos, não durante backtracking)
      - Se `k == total_vazias` → **Resolvido!**
    - Se não encontrar número válido (`num_valido > size`):
      - Limpa a célula: `grid[r][c] = 0` (backtrack)
@@ -609,7 +634,8 @@ k = 0  # Índice da célula vazia atual
 ✅ **Sem limite de recursão** (evita stack overflow)  
 ✅ **Contagem precisa** de iterações  
 ✅ **Estrutura simples**: apenas uma lista de coordenadas e um índice  
-✅ **Mais eficiente** em algumas linguagens (menos overhead que recursão)
+✅ **Mais eficiente** em algumas linguagens (menos overhead que recursão)  
+✅ **Heurística MRV**: Reduz drasticamente o espaço de busca ao priorizar células mais restritas
 
 ---
 
@@ -618,12 +644,14 @@ k = 0  # Índice da célula vazia atual
 ### Classificação Assintótica
 
 - **Pior Caso**: O(N^M) onde:
-  - N = tamanho do Sudoku (3, 6, 9) - número de possíveis valores por célula
+  - N = tamanho do Sudoku (4, 9, 16) - número de possíveis valores por célula
   - M = número de células vazias
-  - **Quando ocorre**: Quando o algoritmo precisa explorar todas as possíveis combinações de valores para as células vazias. Isso acontece quando os valores corretos só são encontrados após testar muitas combinações inválidas, exigindo backtracking extensivo.
+  - **Quando ocorre**: Quando o algoritmo precisa explorar muitas combinações de valores para as células vazias. Isso acontece quando os valores corretos só são encontrados após testar muitas combinações inválidas, exigindo backtracking extensivo.
+  - **Com heurística MRV**: A complexidade prática é significativamente reduzida, pois células mais restritas são processadas primeiro, encontrando conflitos mais cedo e reduzindo o espaço de busca explorado.
 
 - **Melhor Caso**: O(M) onde M é o número de células vazias
-  - **Quando ocorre**: Quando o algoritmo encontra a solução sem necessidade de backtracking significativo. Isso acontece quando há poucas células vazias e os valores corretos são encontrados na primeira tentativa para cada célula, resultando em complexidade linear no número de células vazias.
+  - **Quando ocorre**: Quando o algoritmo encontra a solução sem necessidade de backtracking significativo. Isso acontece quando os valores corretos são encontrados rapidamente para cada célula, resultando em complexidade linear no número de células vazias.
+  - **Com heurística MRV**: A performance é ainda melhor, pois a ordenação inicial já coloca as células mais fáceis de resolver primeiro.
 
 ### Classes de Complexidade
 
@@ -638,9 +666,10 @@ k = 0  # Índice da célula vazia atual
 Os resultados práticos demonstram:
 
 1. **Crescimento exponencial** com aumento de células vazias, confirmando a complexidade O(N^M) no pior caso
-2. **Diferença significativa** entre melhor e pior caso: a razão worst/best aumenta conforme o tamanho do problema, demonstrando que o crescimento exponencial se torna dominante em problemas maiores
-3. **Impacto da linguagem**: C apresenta speedup de 3× a 64× em relação a Python, variando conforme a complexidade do problema
+2. **Diferença significativa** entre melhor e pior caso: a razão worst/best aumenta drasticamente com o tamanho do Sudoku, demonstrando que o crescimento exponencial se torna dominante em problemas maiores
+3. **Impacto da linguagem**: C apresenta speedup significativo em relação a Python, variando conforme a complexidade do problema
 4. **Variabilidade** mesmo com mesma configuração: puzzles diferentes com mesmo número de células vazias podem ter complexidades muito diferentes, dependendo da distribuição e da ordem das células vazias
+5. **Heurística MRV**: A implementação da heurística MRV reduz significativamente o número de iterações e o tempo de execução, especialmente para puzzles mais difíceis, ao priorizar células com menos opções
 
 ---
 

@@ -22,5 +22,7 @@ bool is_in_box(Sudoku* sudoku, int r, int c, int num);
 bool is_safe(Sudoku* sudoku, int r, int c, int num);
 int find_all_empty_cells(Sudoku* sudoku, Coordenada lista_vazias[]);
 int find_next_valid_number(Sudoku* sudoku, int r, int c, int num_inicio);
+int count_possible_values(Sudoku* sudoku, int r, int c);
+void sort_empty_cells_by_mrv(Sudoku* sudoku, Coordenada lista_vazias[], int start, int end);
 
 #endif 

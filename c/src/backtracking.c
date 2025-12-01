@@ -19,10 +19,16 @@ SolveResult solve_sudoku_iterative(Sudoku* sudoku) {
         result.solved = true;
         clock_t end = clock();
         result.time_seconds = (double)(end - start) / CLOCKS_PER_SEC;
+        free(lista_vazias);
         return result;
     }
 
+    // 2. Ordenar células vazias por MRV (Minimum Remaining Values)
+    // Células com menos valores possíveis são processadas primeiro
+    sort_empty_cells_by_mrv(sudoku, lista_vazias, 0, total_vazias);
+
     int k = 0; // Índice da célula vazia atual (nosso "estado")
+    int last_k = -1; // Último valor de k para detectar quando avançamos
 
     // Loop principal do backtracking
     // k == total_vazias -> Solução encontrada
@@ -36,6 +42,13 @@ SolveResult solve_sudoku_iterative(Sudoku* sudoku) {
             fflush(stdout);
         }
       
+        // Reordenar células restantes por MRV apenas quando avançamos (não quando recuamos)
+        // Isso evita reordenações desnecessárias durante backtracking
+        if (k > last_k && k < total_vazias - 1) {
+            sort_empty_cells_by_mrv(sudoku, lista_vazias, k, total_vazias);
+        }
+        last_k = k;
+      
         Coordenada cell = lista_vazias[k];
         int r = cell.row;
         int c = cell.col;
@@ -43,7 +56,7 @@ SolveResult solve_sudoku_iterative(Sudoku* sudoku) {
         // Pega o valor que estava lá (se for 0, começa do 1; se 5, começa do 6)
         int num_inicio = sudoku->grid[r][c] + 1;
 
-        // 2. Encontrar o próximo número válido para esta célula
+        // 3. Encontrar o próximo número válido para esta célula
         int num_valido = find_next_valid_number(sudoku, r, c, num_inicio);
 
         if (num_valido <= sudoku->size) {
@@ -51,7 +64,7 @@ SolveResult solve_sudoku_iterative(Sudoku* sudoku) {
             sudoku->grid[r][c] = num_valido;
             k++; // AVANÇA para a próxima célula vazia
         } else {
-            // FALHA: Nenhum número de 'num_inicio' até 9 funcionou
+            // FALHA: Nenhum número de 'num_inicio' até size funcionou
             sudoku->grid[r][c] = 0;   // LIMPA a célula (o ato do Backtrack)
             k--;               // RECUA para a célula anterior
         }
@@ -66,6 +79,34 @@ SolveResult solve_sudoku_iterative(Sudoku* sudoku) {
     return result;
 }
 
+
+int count_possible_values(Sudoku* sudoku, int r, int c) {
+    int count = 0;
+    for (int num = 1; num <= sudoku->size; num++) {
+        if (is_safe(sudoku, r, c, num)) {
+            count++;
+        }
+    }
+    return count;
+}
+
+void sort_empty_cells_by_mrv(Sudoku* sudoku, Coordenada lista_vazias[], int start, int end) {
+    // Ordena células vazias por número de valores possíveis (MRV - Minimum Remaining Values)
+    // Usa bubble sort simples (eficiente para pequenos arrays)
+    for (int i = start; i < end - 1; i++) {
+        for (int j = start; j < end - 1 - (i - start); j++) {
+            int count_j = count_possible_values(sudoku, lista_vazias[j].row, lista_vazias[j].col);
+            int count_j1 = count_possible_values(sudoku, lista_vazias[j + 1].row, lista_vazias[j + 1].col);
+            
+            if (count_j > count_j1) {
+                // Troca
+                Coordenada temp = lista_vazias[j];
+                lista_vazias[j] = lista_vazias[j + 1];
+                lista_vazias[j + 1] = temp;
+            }
+        }
+    }
+}
 
 int find_all_empty_cells(Sudoku* sudoku, Coordenada lista_vazias[]) {
     int count = 0;

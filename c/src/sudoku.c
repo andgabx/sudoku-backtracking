@@ -117,30 +117,37 @@ int count_empty_cells(Sudoku* sudoku) {
 Sudoku* sudoku_parse_from_string(const char* str, int size) {
     Sudoku* sudoku = sudoku_create(size);
     
-    // Copia a string para poder usar strtok
+    // Create a copy of the string to modify safely
     char* str_copy = (char*)malloc(strlen(str) + 1);
     strcpy(str_copy, str);
     
-    char* line = strtok(str_copy, "\n");
+    char* cursor = str_copy;
+    char* line_end;
     int row = 0;
     
-    while (line != NULL && row < size) {
-        // Pula linhas de separador (que começam com -)
-        if (line[0] == '-') {
-            line = strtok(NULL, "\n");
-            continue;
+    // Outer loop: Iterate over lines manually using strchr
+    // This avoids using strtok's static state for the outer loop
+    while (row < size && ((line_end = strchr(cursor, '\n')) != NULL || *cursor != '\0')) {
+        // If we found a newline, terminate the string there temporarily
+        if (line_end) {
+            *line_end = '\0';
         }
         
-        // Parse números da linha, ignorando | e espaços
-        // Usa strtok para separar por espaços e |, depois converte cada token
-        char* line_copy = (char*)malloc(strlen(line) + 1);
-        strcpy(line_copy, line);
+        // Skip separator lines (starting with -)
+        if (cursor[0] == '-') {
+            if (line_end) cursor = line_end + 1;
+            else break;
+            continue;
+        }
+        // Inner loop: Use strtok safely to parse numbers within the line
+        // We need a copy because strtok modifies the string
+        char* line_copy = (char*)malloc(strlen(cursor) + 1);
+        strcpy(line_copy, cursor);
         
         char* token = strtok(line_copy, " |\t");
         int col = 0;
         
         while (token != NULL && col < size) {
-            // Converte token para número (aceita 1-9 e A-G)
             if (strlen(token) == 1) {
                 int num = char_to_num(token[0]);
                 if (num >= 0 && num <= size) {
@@ -148,7 +155,6 @@ Sudoku* sudoku_parse_from_string(const char* str, int size) {
                     col++;
                 }
             } else {
-                // Tenta converter como número decimal (para compatibilidade)
                 char* endptr;
                 int num = (int)strtol(token, &endptr, 10);
                 if (endptr != token && *endptr == '\0' && num >= 0 && num <= size) {
@@ -162,10 +168,16 @@ Sudoku* sudoku_parse_from_string(const char* str, int size) {
         
         free(line_copy);
         
-        if (col > 0) {  // Só incrementa row se encontrou números
+        if (col > 0) {
             row++;
         }
-        line = strtok(NULL, "\n");
+        
+        // Move cursor to the character after the newline
+        if (line_end) {
+            cursor = line_end + 1;
+        } else {
+            break; // End of string
+        }
     }
     
     free(str_copy);
