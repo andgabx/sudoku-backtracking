@@ -115,7 +115,7 @@ def plot_time_comparison(df, output_dir):
     fig, axes = plt.subplots(1, 2, figsize=(16, 6))
     
     sizes = sorted(df['size'].unique())
-    size_labels = {3: 'Small (3×3)', 6: 'Medium (6×6)', 9: 'Large (9×9)'}
+    size_labels = {4: 'Small (4×4)', 9: 'Medium (9×9)', 16: 'Large (16×16)'}
     
     # Gráfico 1: Best Case
     ax1 = axes[0]
@@ -217,7 +217,7 @@ def plot_time_vs_iterations(df, output_dir):
     fig, axes = plt.subplots(1, 2, figsize=(18, 7))
     
     sizes = sorted(df['size'].unique())
-    size_labels = {3: 'Small (3×3)', 6: 'Medium (6×6)', 9: 'Large (9×9)'}
+    size_labels = {4: 'Small (4×4)', 9: 'Medium (9×9)', 16: 'Large (16×16)'}
     colors_c = {3: '#2E86AB', 6: '#1B5E7A', 9: '#0D3B5A'}
     colors_py = {3: '#A23B72', 6: '#7A2B54', 9: '#521C36'}
     
@@ -374,7 +374,7 @@ def plot_summary(df, output_dir):
     fig, ax = plt.subplots(figsize=(12, 7))
     
     sizes = sorted(df['size'].unique())
-    size_labels = {3: '3×3', 6: '6×6', 9: '9×9'}
+    size_labels = {4: '4×4', 9: '9×9', 16: '16×16'}
     
     # Preparar dados para best case
     c_best_times = []
@@ -484,7 +484,7 @@ def plot_best_vs_worst(df, output_dir):
     fig, axes = plt.subplots(1, 2, figsize=(16, 6))
     
     sizes = sorted(df['size'].unique())
-    size_labels = {3: 'Small (3×3)', 6: 'Medium (6×6)', 9: 'Large (9×9)'}
+    size_labels = {4: 'Small (4×4)', 9: 'Medium (9×9)', 16: 'Large (16×16)'}
     
     # Tempo - separado por linguagem (porque os tempos são diferentes)
     ax1 = axes[0]

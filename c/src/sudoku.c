@@ -57,6 +57,32 @@ bool is_valid(Sudoku* sudoku, int row, int col, int num) {
     return true;
 }
 
+static char num_to_char(int num) {
+    if (num == 0) {
+        return '0';
+    } else if (num >= 1 && num <= 9) {
+        return '0' + num;
+    } else if (num >= 10 && num <= 16) {
+        return 'A' + (num - 10);
+    } else {
+        return '?';
+    }
+}
+
+static int char_to_num(char c) {
+    if (c == '0') {
+        return 0;
+    } else if (c >= '1' && c <= '9') {
+        return c - '0';
+    } else if (c >= 'A' && c <= 'G') {
+        return c - 'A' + 10;
+    } else if (c >= 'a' && c <= 'g') {
+        return c - 'a' + 10;
+    } else {
+        return 0;
+    }
+}
+
 void sudoku_print(Sudoku* sudoku) {
     for (int i = 0; i < sudoku->size; i++) {
         if (i % sudoku->box_size == 0 && i != 0) {
@@ -70,7 +96,7 @@ void sudoku_print(Sudoku* sudoku) {
             if (j % sudoku->box_size == 0 && j != 0) {
                 printf("| ");
             }
-            printf("%d ", sudoku->grid[i][j]);
+            printf("%c ", num_to_char(sudoku->grid[i][j]));
         }
         printf("\n");
     }
@@ -106,18 +132,35 @@ Sudoku* sudoku_parse_from_string(const char* str, int size) {
         }
         
         // Parse números da linha, ignorando | e espaços
+        // Usa strtok para separar por espaços e |, depois converte cada token
+        char* line_copy = (char*)malloc(strlen(line) + 1);
+        strcpy(line_copy, line);
+        
+        char* token = strtok(line_copy, " |\t");
         int col = 0;
-        for (int i = 0; line[i] != '\0' && col < size; i++) {
-            // Se é um dígito, converte
-            if (line[i] >= '0' && line[i] <= '9') {
-                sudoku->grid[row][col] = line[i] - '0';
-                col++;
-                // Pula o resto do número se houver (não deve acontecer para Sudoku 3x3, 6x6, 9x9)
-                while (line[i + 1] >= '0' && line[i + 1] <= '9') {
-                    i++;
+        
+        while (token != NULL && col < size) {
+            // Converte token para número (aceita 1-9 e A-G)
+            if (strlen(token) == 1) {
+                int num = char_to_num(token[0]);
+                if (num >= 0 && num <= size) {
+                    sudoku->grid[row][col] = num;
+                    col++;
+                }
+            } else {
+                // Tenta converter como número decimal (para compatibilidade)
+                char* endptr;
+                int num = (int)strtol(token, &endptr, 10);
+                if (endptr != token && *endptr == '\0' && num >= 0 && num <= size) {
+                    sudoku->grid[row][col] = num;
+                    col++;
                 }
             }
+            
+            token = strtok(NULL, " |\t");
         }
+        
+        free(line_copy);
         
         if (col > 0) {  // Só incrementa row se encontrou números
             row++;

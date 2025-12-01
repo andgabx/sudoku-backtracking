@@ -37,6 +37,10 @@ def solve_sudoku_iterativo(sudoku: Sudoku) -> SolveResult:
     while -1 < k < total_vazias:
         iterations += 1
         
+        # Print de progresso a cada 10 milhões de iterações (para puzzles grandes)
+        if iterations % 10000000 == 0:
+            print(f"  ... {iterations} iterações e contando...")
+        
         cell = lista_vazias[k]
         r, c = cell.row, cell.col
 
@@ -92,7 +96,7 @@ def _is_in_col(sudoku: Sudoku, c: int, num: int) -> bool:
     return False
 
 def _is_in_box(sudoku: Sudoku, r: int, c: int, num: int) -> bool:
-    """Verifica se 'num' já existe no bloco 3x3."""
+    """Verifica se 'num' já existe no bloco (box_size x box_size)."""
     box_start_row = r - r % sudoku.box_size
     box_start_col = c - c % sudoku.box_size
     for i in range(sudoku.box_size):

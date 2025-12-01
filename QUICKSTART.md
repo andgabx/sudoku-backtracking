@@ -34,7 +34,7 @@ make run SIZE=medium CASE=best LANG=c
 ```
 
 **Opções:**
-- `SIZE`: `small` (3x3), `medium` (6x6), `large` (9x9)
+- `SIZE`: `small` (4x4), `medium` (9x9), `large` (16x16)
 - `CASE`: `best` (poucas células vazias), `worst` (muitas células vazias)
 - `LANG`: `c`, `python`
 
@@ -138,7 +138,7 @@ cd python/src && python3 main.py small best
 ```
 === Análise de Complexidade - Backtracking Iterativo para Sudoku ===
 Linguagem: C
-Tamanho: 3x3
+Tamanho: 4x4
 Caso: best
 Células vazias alvo: 2
 

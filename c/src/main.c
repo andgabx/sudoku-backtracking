@@ -22,14 +22,14 @@ int main(int argc, char* argv[]) {
     int empty_cells;
     
     if (strcmp(size_str, "small") == 0) {
-        size = 3;
-        empty_cells = (strcmp(case_str, "best") == 0) ? 2 : 5;
+        size = 4;
+        empty_cells = (strcmp(case_str, "best") == 0) ? 8 : 5;
     } else if (strcmp(size_str, "medium") == 0) {
-        size = 6;
-        empty_cells = (strcmp(case_str, "best") == 0) ? 9 : 22;
-    } else if (strcmp(size_str, "large") == 0) {
         size = 9;
-        empty_cells = (strcmp(case_str, "best") == 0) ? 23 : 55;
+        empty_cells = (strcmp(case_str, "best") == 0) ? 40 : 24;
+    } else if (strcmp(size_str, "large") == 0) {
+        size = 16;
+        empty_cells = (strcmp(case_str, "best") == 0) ? 128 : 77;
     } else {
         printf("Tamanho inválido. Use: small, medium ou large\n");
         return 1;
@@ -69,7 +69,7 @@ int main(int argc, char* argv[]) {
     FILE* puzzle_file = fopen(puzzle_filename, "r");
     if (!puzzle_file) {
         printf("Erro: Não foi possível abrir arquivo de puzzles: %s\n", puzzle_filename);
-        printf("Execute primeiro: python3 generate_sudoku_puzzles.py\n");
+        printf("Execute primeiro: make build-generator && ./c/bin/puzzle_generator\n");
         return 1;
     }
     printf("  Carregando puzzles de: %s\n", puzzle_filename);
@@ -86,6 +86,8 @@ int main(int argc, char* argv[]) {
         int actual_empty = count_empty_cells(sudoku);
         
         printf("\n=== Execução %d/30 ===\n", run);
+        printf("  Resolvendo puzzle... (pode demorar para puzzles grandes)\n");
+        fflush(stdout);  // Garante que a mensagem aparece imediatamente
         
         SolveResult result = solve_sudoku_iterative(sudoku);
 
@@ -106,6 +108,7 @@ int main(int argc, char* argv[]) {
         
         printf("  Execução %d/%d concluída (%.6fs, %lld iterações)\n", 
                run, 30, result.time_seconds, result.iterations);
+        fflush(stdout);  // Garante que a mensagem aparece imediatamente
     }
     
     fclose(puzzle_file);

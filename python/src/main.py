@@ -17,9 +17,9 @@ def main():
     # Define tamanho do Sudoku e células vazias
 
     size_map = {
-        'small': (3, 2, 5),   # (tamanho, celulas vazias no melhor caso, celulas vazias no pior caso)
-        'medium': (6, 9, 22),
-        'large': (9, 23, 55)
+        'small': (4, 8, 5),        # 4x4: best=8 (50%), worst=5 (31%)
+        'medium': (9, 40, 24),     # 9x9: best=40 (49%), worst=24 (30%)
+        'large': (16, 128, 77)     # 16x16: best=128 (50%), worst=77 (30%)
     }
     
     if size_str not in size_map:
@@ -58,7 +58,7 @@ def main():
                 puzzle_content = f.read()
         except FileNotFoundError:
             print(f"Erro: Arquivo de puzzles não encontrado: {puzzle_file_path}")
-            print("Execute primeiro: python3 generate_sudoku_puzzles.py")
+            print("Execute primeiro: make build-generator && ./c/bin/puzzle_generator")
             sys.exit(1)
         
         print(f"  Carregando puzzles de: {puzzle_file_path}")
@@ -82,6 +82,7 @@ def main():
             actual_empty = sudoku.count_empty_cells()
             
             print(f"\n=== Execução {run}/30 ===")
+            print("  Resolvendo puzzle... (pode demorar para puzzles grandes)")
             
             result = solve_sudoku_iterativo(sudoku)
             

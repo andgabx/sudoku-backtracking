@@ -14,6 +14,8 @@ LOGS_DIR = logs
 # Arquivos fonte C
 C_SOURCES = $(C_SRC_DIR)/sudoku.c $(C_SRC_DIR)/backtracking.c $(C_SRC_DIR)/puzzle_loader.c $(C_SRC_DIR)/main.c
 C_EXECUTABLE = $(C_BIN_DIR)/sudoku_solver
+GENERATOR_SOURCES = $(C_SRC_DIR)/sudoku.c $(C_SRC_DIR)/generator.c $(C_SRC_DIR)/puzzle_generator.c
+GENERATOR_EXECUTABLE = $(C_BIN_DIR)/puzzle_generator
 
 # Parâmetros padrão
 SIZE ?= small
@@ -38,6 +40,13 @@ build:
 	@$(CC) $(C_SOURCES) -I$(C_INC_DIR) -o $(C_EXECUTABLE) $(CFLAGS)
 	@echo "$(GREEN)✓ Compilação concluída!$(NC)"
 
+# Compila o gerador de puzzles
+build-generator:
+	@echo "$(BLUE)Compilando gerador de puzzles...$(NC)"
+	@mkdir -p $(C_BIN_DIR)
+	@$(CC) $(GENERATOR_SOURCES) -I$(C_INC_DIR) -o $(GENERATOR_EXECUTABLE) $(CFLAGS)
+	@echo "$(GREEN)✓ Gerador compilado!$(NC)"
+
 # Cria diretório de logs
 $(LOGS_DIR):
 	@mkdir -p $(LOGS_DIR)
@@ -45,7 +54,8 @@ $(LOGS_DIR):
 # Executa um teste específico
 run: $(LOGS_DIR)
 	@echo "$(BLUE)Gerando puzzles pré-gerados...$(NC)"
-	@$(PYTHON) generate_sudoku_puzzles.py
+	@$(MAKE) build-generator --no-print-directory
+	@cd $(C_BIN_DIR) && ./puzzle_generator
 	@echo ""
 ifeq ($(LANG),c)
 	@$(MAKE) build --no-print-directory
@@ -72,7 +82,8 @@ run-all: $(LOGS_DIR)
 	@echo "$(GREEN)════════════════════════════════════════════════════════════$(NC)"
 	@echo ""
 	@echo "$(BLUE)Gerando puzzles pré-gerados...$(NC)"
-	@$(PYTHON) generate_sudoku_puzzles.py
+	@$(MAKE) build-generator --no-print-directory
+	@cd $(C_BIN_DIR) && ./puzzle_generator
 	@echo ""
 	@$(MAKE) build --no-print-directory
 	@echo ""
@@ -125,7 +136,8 @@ run-all: $(LOGS_DIR)
 # Testa uma configuração específica (apenas 3 execuções para teste rápido)
 test: $(LOGS_DIR)
 	@echo "$(BLUE)Gerando puzzles pré-gerados...$(NC)"
-	@$(PYTHON) generate_sudoku_puzzles.py
+	@$(MAKE) build-generator --no-print-directory
+	@cd $(C_BIN_DIR) && ./puzzle_generator
 	@echo ""
 	@echo "$(BLUE)Teste rápido: C - Small - Best Case (apenas 3 execuções)$(NC)"
 	@$(MAKE) build --no-print-directory
@@ -174,9 +186,9 @@ help:
 	@echo "  make run-all"
 	@echo ""
 	@echo "$(BLUE)Configurações dos casos:$(NC)"
-	@echo "  Small (3x3):  Best=2-3 vazias  | Worst=5-6 vazias"
-	@echo "  Medium (6x6): Best=8-10 vazias | Worst=20-24 vazias"
-	@echo "  Large (9x9):  Best=20-25 vazias| Worst=50-60 vazias"
+	@echo "  Small (4x4):   Best=8 vazias (50%)  | Worst=5 vazias (31%)"
+	@echo "  Medium (9x9):  Best=40 vazias (49%) | Worst=24 vazias (30%)"
+	@echo "  Large (16x16): Best=128 vazias (50%)| Worst=77 vazias (30%)"
 	@echo ""
 	@echo "$(YELLOW)Nota: Cada teste executa 30 iterações e gera logs em $(LOGS_DIR)/$(NC)"
 	@echo "$(GREEN)════════════════════════════════════════════════════════════$(NC)"

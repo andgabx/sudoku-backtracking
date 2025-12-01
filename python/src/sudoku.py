@@ -52,6 +52,17 @@ class Sudoku:
                     count += 1
         return count
     
+    def _num_to_char(self, num: int) -> str:
+        """Converte número interno (1-16) para representação externa (1-9, A-G)."""
+        if num == 0:
+            return "0"
+        elif 1 <= num <= 9:
+            return str(num)
+        elif 10 <= num <= 16:
+            return chr(ord('A') + num - 10)
+        else:
+            return str(num)
+    
     def print(self):
 
 # imprime o tabuleiro do sudoku formatado
@@ -63,8 +74,20 @@ class Sudoku:
             for j in range(self.size):
                 if j % self.box_size == 0 and j != 0:
                     print("| ", end="")
-                print(f"{self.grid[i][j]} ", end="")
+                print(f"{self._num_to_char(self.grid[i][j])} ", end="")
             print()
+    
+    @staticmethod
+    def _char_to_num(char: str) -> int:
+        """Converte representação externa (1-9, A-G) para número interno (1-16)."""
+        if char == '0':
+            return 0
+        elif '1' <= char <= '9':
+            return int(char)
+        elif 'A' <= char <= 'G':
+            return ord(char) - ord('A') + 10
+        else:
+            return 0
     
     @staticmethod
     def parse_from_string(sudoku_str: str, size: int) -> 'Sudoku':
@@ -81,11 +104,8 @@ class Sudoku:
             col = 0
             for cell in cells:
                 if col < size:
-                    try:
-                        sudoku.grid[row][col] = int(cell)
-                        col += 1
-                    except ValueError:
-                        pass
+                    sudoku.grid[row][col] = Sudoku._char_to_num(cell.upper())
+                    col += 1
             row += 1
         
         return sudoku

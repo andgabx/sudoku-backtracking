@@ -5,7 +5,7 @@
 Este projeto implementa e analisa a complexidade de tempo do algoritmo de **Backtracking Iterativo** para resolver puzzles de Sudoku. O objetivo é realizar uma análise comparativa detalhada considerando:
 
 - **Duas linguagens de programação**: C e Python
-- **Três tamanhos de problema**: Small (3×3), Medium (6×6), Large (9×9)
+- **Três tamanhos de problema**: Small (4×4), Medium (9×9), Large (16×16)
 - **Dois casos de teste**: Melhor caso e Pior caso
 - **30 execuções** para cada combinação de parâmetros
 - **Medição de tempo** e **contagem de iterações**
@@ -83,10 +83,7 @@ sudoku_backtracking/
 │       │                        #    - count_empty_cells(): conta células vazias
 │       │                        #    - parse_from_string(): converte string para Sudoku
 │       │
-│       └── generator.py       # ← Gerador de puzzles válidos
-│                                #    - generate_sudoku(): gera puzzle com células vazias
-│                                #    - fill_sudoku(): preenche Sudoku com solução válida
-│                                #    - PortableLCG: gerador aleatório portável (compatível com C)
+│
 │
 ├── logs/                       # Logs gerados (criado automaticamente)
 │   ├── c_small_best.log
@@ -94,7 +91,7 @@ sudoku_backtracking/
 │   ├── python_small_best.log
 │   └── ... (12 arquivos no total)
 │
-├── puzzle_seeds/              # Puzzles pré-gerados (criado por generate_sudoku_puzzles.py)
+├── puzzle_seeds/              # Puzzles pré-gerados (criado por puzzle_generator em C)
 │   ├── small_best.txt        # 30 puzzles para Small Best Case
 │   ├── small_worst.txt       # 30 puzzles para Small Worst Case
 │   └── ... (6 arquivos no total)
@@ -113,10 +110,7 @@ sudoku_backtracking/
 │                                #    - Gera tabelas comparativas C vs Python
 │                                #    - Calcula speedup entre linguagens
 │
-├── generate_sudoku_puzzles.py  # ← Script para gerar puzzles pré-gerados
-│                                #    - Gera 30 puzzles para cada configuração (size × case)
-│                                #    - Salva em formato texto (puzzle_seeds/)
-│                                #    - Usa generator.py para criar puzzles válidos
+│
 │
 ├── run_with_shared_seeds.py   # ← Script para executar testes com puzzles compartilhados
 │                                #    - Orquestra execução de C e Python
@@ -443,23 +437,24 @@ pip install pandas matplotlib numpy
 O projeto usa um sistema de **puzzles pré-gerados** para garantir que C e Python resolvam os mesmos puzzles, permitindo comparação justa de iterações e performance.
 
 **Como funciona:**
-- Os puzzles são gerados uma vez usando Python e salvos em arquivos de texto
+- Os puzzles são gerados uma vez usando C e salvos em arquivos de texto
 - Cada arquivo contém 30 puzzles no formato visual (como são impressos)
 - C e Python leem os mesmos arquivos e resolvem os mesmos puzzles
 
 **Geração dos puzzles:**
 ```bash
 # Gera todos os arquivos de puzzles (executado automaticamente antes de cada teste)
-python3 generate_sudoku_puzzles.py
+make build-generator
+./c/bin/puzzle_generator
 ```
 
 Este comando gera 6 arquivos em `puzzle_seeds/`:
-- `small_best.txt` - 30 puzzles 3×3 com 2 células vazias
-- `small_worst.txt` - 30 puzzles 3×3 com 5 células vazias
-- `medium_best.txt` - 30 puzzles 6×6 com 9 células vazias
-- `medium_worst.txt` - 30 puzzles 6×6 com 22 células vazias
-- `large_best.txt` - 30 puzzles 9×9 com 23 células vazias
-- `large_worst.txt` - 30 puzzles 9×9 com 55 células vazias
+- `small_best.txt` - 30 puzzles 4×4 com 8 células vazias (50%)
+- `small_worst.txt` - 30 puzzles 4×4 com 5 células vazias (31%)
+- `medium_best.txt` - 30 puzzles 9×9 com 40 células vazias (49%)
+- `medium_worst.txt` - 30 puzzles 9×9 com 24 células vazias (30%)
+- `large_best.txt` - 30 puzzles 16×16 com 128 células vazias (50%)
+- `large_worst.txt` - 30 puzzles 16×16 com 77 células vazias (30%)
 
 **Formato dos arquivos:**
 Cada arquivo `.txt` contém 30 puzzles no formato visual:
@@ -490,7 +485,8 @@ Cada arquivo `.txt` contém 30 puzzles no formato visual:
 **Uso:**
 Os puzzles são gerados uma vez e reutilizados em todas as execuções. Para regenerar os puzzles (com novos valores aleatórios), execute novamente:
 ```bash
-python3 generate_sudoku_puzzles.py
+make build-generator
+./c/bin/puzzle_generator
 ```
 
 **Limpeza:**
@@ -512,9 +508,9 @@ make help
 
 | Tamanho | Dimensão | Melhor Caso (vazias) | Pior Caso (vazias) |
 |---------|----------|----------------------|--------------------|
-| Small   | 3×3      | 2                    | 5                  |
-| Medium  | 6×6      | 9                    | 22                 |
-| Large   | 9×9      | 23                   | 55                 |
+| Small   | 4×4      | 8 (50%)              | 5 (31%)             |
+| Medium  | 9×9      | 40 (49%)             | 24 (30%)            |
+| Large   | 16×16    | 128 (50%)            | 77 (30%)            |
 
 **Melhor Caso**: Puzzles com poucas células vazias (2, 9, 23 respectivamente). O algoritmo encontra a solução rapidamente, com complexidade O(M), onde M é o número de células vazias. Os valores corretos são encontrados na primeira tentativa para cada célula, resultando em mínimo backtracking.
 
@@ -642,7 +638,7 @@ k = 0  # Índice da célula vazia atual
 Os resultados práticos demonstram:
 
 1. **Crescimento exponencial** com aumento de células vazias, confirmando a complexidade O(N^M) no pior caso
-2. **Diferença significativa** entre melhor e pior caso: a razão worst/best aumenta de 2.80× (3×3) para 2086.25× (9×9), demonstrando que o crescimento exponencial se torna dominante em problemas maiores
+2. **Diferença significativa** entre melhor e pior caso: a razão worst/best aumenta conforme o tamanho do problema, demonstrando que o crescimento exponencial se torna dominante em problemas maiores
 3. **Impacto da linguagem**: C apresenta speedup de 3× a 64× em relação a Python, variando conforme a complexidade do problema
 4. **Variabilidade** mesmo com mesma configuração: puzzles diferentes com mesmo número de células vazias podem ter complexidades muito diferentes, dependendo da distribuição e da ordem das células vazias
 

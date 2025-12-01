@@ -29,6 +29,12 @@ SolveResult solve_sudoku_iterative(Sudoku* sudoku) {
     // k == -1 -> Beco sem saída total
     while (k >= 0 && k < total_vazias) {
         result.iterations++;
+        
+        // Print de progresso a cada 10 milhões de iterações (para puzzles grandes)
+        if (result.iterations % 10000000 == 0) {
+            printf("  ... %lld iterações e contando...\n", result.iterations);
+            fflush(stdout);
+        }
       
         Coordenada cell = lista_vazias[k];
         int r = cell.row;
@@ -53,7 +59,7 @@ SolveResult solve_sudoku_iterative(Sudoku* sudoku) {
 
     clock_t end = clock();
     result.time_seconds = (double)(end - start) / CLOCKS_PER_SEC;
-    result.solved = k == total_vazias;
+    result.solved = (k == total_vazias);
 
     free(lista_vazias);
     

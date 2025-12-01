@@ -31,7 +31,7 @@ Sudoku* load_puzzle_from_file(FILE* file, int size) {
             strcat(puzzle_str, buffer);
             puzzle_line_count++;
             
-            // Para Sudoku 3x3: ~5 linhas, 6x6: ~9 linhas, 9x9: ~13 linhas
+            // Para Sudoku 4x4: ~6 linhas, 9x9: ~13 linhas, 16x16: ~21 linhas
             if (puzzle_line_count > size + (size / 3) + 2) {
                 break;
             }
